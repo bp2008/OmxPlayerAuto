@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+	<title>OmxPlayerAuto</title>
+	<script type="text/javascript">
+		window.onerror = function (msg, url, line, charIdx)
+		{
+			try
+			{
+				alert("An unexpected error has occurred.\n\n" + msg + "\nURL: " + url + "\nLine: " + line + "\nChar: " + charIdx);
+			}
+			catch (ex)
+			{
+				alert(ex);
+			}
+		};
+	</script>
+	<script src="jquery-3.1.1.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		var allSelectors = "#txt,input";
+		$(function ()
+		{
+			$.ajax({ url: "getList" })
+				.done(function (response, textStatus, jqXHR)
+				{
+					$("#txt").val(response);
+					if (jqXHR.getResponseHeader("Streamingenabled") == "1")
+						$("#streamingEnabledCb").prop("checked", "checked");
+					else
+						$("#streamingEnabledCb").removeProp("checked");
+					$(allSelectors).removeAttr("disabled");
+				})
+				.fail(function (jqxhr, settings, exception)
+				{
+					alert("Unable to get settings.");
+				});
+			UpdateStatus();
+		});
+		function SetNewList()
+		{
+			$(allSelectors).attr("disabled", "disabled");
+			$.ajax({ url: "setNewList", method: "POST", data: { newlist: $("#txt").val() } })
+				.done(function (response)
+				{
+					$(allSelectors).removeAttr("disabled");
+				})
+				.fail(function (jqxhr, settings, exception)
+				{
+					alert("Unable to save.");
+					$(allSelectors).removeAttr("disabled");
+				});
+		}
+		function StreamingEnabledChanged()
+		{
+			$(allSelectors).attr("disabled", "disabled");
+			$.ajax({ url: "setEnabled?enable=" + ($("#streamingEnabledCb").is(":checked") ? "1" : "0") })
+				.done(function (response)
+				{
+					$(allSelectors).removeAttr("disabled");
+				})
+				.fail(function (jqxhr, settings, exception)
+				{
+					alert("Unable to toggle Streaming Enabled checkbox on server.");
+					if ($("#streamingEnabledCb").is(":checked"))
+						$("#streamingEnabledCb").removeProp("checked");
+					else
+						$("#streamingEnabledCb").prop("checked", "checked");
+					$(allSelectors).removeAttr("disabled");
+				});
+		}
+		function UpdateStatus()
+		{
+			$.ajax({ url: "getStatus" })
+				.done(function (response)
+				{
+					$("#status").css("color", "#000000").text(response);
+					setTimeout(UpdateStatus, 1000);
+				})
+				.fail(function (jqxhr, settings, exception)
+				{
+					$("#status").css("color", "#FF0000");
+					setTimeout(UpdateStatus, 1000);
+				});
+		}
+		function htmlEncode(value)
+		{
+			return $('<div/>').text(value).html();
+		}
+		function htmlDecode(value)
+		{
+			return $('<div/>').html(value).text();
+		}
+		String.prototype.padLeft = function (len, c)
+		{
+			var str = this;
+			while (str.length < len)
+				str = (c || "&nbsp;") + str;
+			return str;
+		};
+	</script>
+	<style type="text/css">
+		body
+		{
+			font-family: Consolas, monospace;
+			font-size: 10pt;
+		}
+
+		textarea
+		{
+			width: 100%;
+			min-width: 100%;
+			max-width: 100%;
+		}
+
+		#message
+		{
+			margin: 10px 0px;
+			font-weight: bold;
+		}
+
+		#status
+		{
+			white-space: pre-wrap;
+		}
+	</style>
+</head>
+<body>
+	<div id="root">
+		<div><textarea id="txt" rows="20" disabled="disabled" wrap="off">Loading...</textarea></div>
+		<div><input type="button" onclick="SetNewList()" value="Save" disabled="disabled" /></div>
+		<div><label><input type="checkbox" id="streamingEnabledCb" onclick="StreamingEnabledChanged()" disabled="disabled" />Streaming Enabled</label></div>
+		<div id="message"></div>
+		<div id="status"></div>
+	</div>
+</body>
+</html>

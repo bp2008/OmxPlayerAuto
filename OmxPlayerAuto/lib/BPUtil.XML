@@ -1,0 +1,870 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BPUtil</name>
+    </assembly>
+    <members>
+        <member name="M:BPUtil.Globals.Initialize(System.String,System.String)">
+            <summary>
+            Call this to initialize global static variables.
+            </summary>
+            <param name="exePath">Pass in the path to the exe in the root directory of the application.  The directory must exist, but the exe name can just be a descriptive exe file name like "My Application.exe" and does not need to exist.</param>
+            <param name="writablePath">A string to be appended to ApplicationDirectoryBase to create WritableDirectoryBase.  Example: "" or "writable/" or "somedir/writable/"</param>
+        </member>
+        <member name="P:BPUtil.Globals.ExecutableNameWithExtension">
+            <summary>
+            Gets the name of the executable file, including the extension.  e.g. "MyProgram.exe" => "MyProgram.exe"
+            </summary>
+        </member>
+        <member name="P:BPUtil.Globals.ExecutableNameWithoutExtension">
+            <summary>
+            Gets the name of the executable file, NOT including the extension.  e.g. "MyProgram.exe" => "MyProgram"
+            </summary>
+        </member>
+        <member name="P:BPUtil.Globals.ApplicationRoot">
+            <summary>
+            Gets the full path to the root directory where the current executable is located.  Does not have trailing '/'.
+            </summary>
+        </member>
+        <member name="P:BPUtil.Globals.ApplicationDirectoryBase">
+            <summary>
+            Gets the full path to the root directory where the current executable is located.  Includes trailing '/'.
+            </summary>
+        </member>
+        <member name="P:BPUtil.Globals.WritableDirectoryBase">
+            <summary>
+            Gets the full path to a persistent directory where the application can write to.  Includes trailing '/'.
+            </summary>
+        </member>
+        <member name="P:BPUtil.Globals.ErrorFilePath">
+            <summary>
+            Gets the full path to the error log file.  Includes trailing '/'.
+            </summary>
+        </member>
+        <member name="P:BPUtil.Globals.ConfigFilePath">
+            <summary>
+            Gets the full path to the config file.
+            </summary>
+        </member>
+        <member name="F:BPUtil.Globals.Version">
+            <summary>
+            The BPUtil version number, not to be confused with the version number of the application this is included in.
+            </summary>
+        </member>
+        <member name="M:BPUtil.Hash.GetSHA512Bytes(System.Byte[],System.Byte[])">
+            <summary>
+            Computes the SHA512 hash of the specified binary data, optionally appending a binary salt value.
+            </summary>
+            <param name="data">Binary data to hash.</param>
+            <param name="salt">A salt value to append directly to the end of the data before hashing.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Hash.GetSHA512Bytes(System.String,System.Byte[])">
+            <summary>
+            Computes the SHA512 hash of the specified string, optionally appending a binary salt value.
+            </summary>
+            <param name="s">A UTF8-encoded string.</param>
+            <param name="salt">A salt value to append directly to the end of the string's binary data before hashing.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Hash.GetSHA256Bytes(System.Byte[],System.Byte[])">
+            <summary>
+            Computes the SHA256 hash of the specified binary data, optionally appending a binary salt value.
+            </summary>
+            <param name="data">Binary data to hash.</param>
+            <param name="salt">A salt value to append directly to the end of the data before hashing.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Hash.GetSHA256Bytes(System.String,System.Byte[])">
+            <summary>
+            Computes the SHA256 hash of the specified string, optionally appending a binary salt value.
+            </summary>
+            <param name="s">A UTF8-encoded string.</param>
+            <param name="salt">A salt value to append directly to the end of the string's binary data before hashing.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.HttpLogger.GetWebServerLogFilePathForToday(System.DateTime)">
+            <summary>
+            Gets the full path to the web server log file that should be used for events logged at the specified time.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:BPUtil.StreamingLogReader">
+            <summary>
+            A class which can read a log file and keep a rolling view of the last 50000 lines of text, presenting them upon request by a client.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Crypto.CryptContext.#ctor">
+            <summary>
+            By default, sets up to create a new randomly named key container
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Crypto.DisposeableObject.ThrowIfDisposed">
+            <summary>
+            Typical check for derived classes
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Crypto.DisposeableObject.ThrowIfDisposed(System.String)">
+            <summary>
+            Typical check for derived classes
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.SimpleThreadPool.idleThreads">
+            <summary>
+            A stack of threads that are idle.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.SimpleThreadPool.actionQueue">
+            <summary>
+            A queue of actions to be performed by threads.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.SimpleThreadPool.CurrentLiveThreads">
+            <summary>
+            Gets the number of threads that are currently available, including those which are busy and those which are idle.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.SimpleThreadPool.CurrentBusyThreads">
+            <summary>
+            Gets the number of threads that are currently busy processing actions.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.SimpleThreadPool.MaxThreads">
+            <summary>
+            Gets or sets the soft maximum number of threads this pool should have active at any given time.  It is possible for there to be temporarily more threads than this if certain race conditions are met.  If reducing the value, it may take some time for the number of threads to fall into line, as no special effort is taken to reduce the live thread count quickly.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.SimpleThreadPool.MinThreads">
+            <summary>
+            Gets or sets the minimum number of threads this pool should have active at any given time.  If increasing the value, it may take some time for the number of threads to rise, as no special effort is taken to reach this number.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.SimpleThreadPool.#ctor(System.String,System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="poolName"></param>
+            <param name="minThreads">The minimum number of threads that should be kept alive at all times.</param>
+            <param name="maxThreads">The largest number of threads this pool should attempt to have alive at any given time.  It is possible for there to be temporarily more threads than this if certain race conditions are met.</param>
+            <param name="threadTimeoutMilliseconds"></param>
+            <param name="useBackgroundThreads">If true, the application will be able to exit without waiting for this thread pool.  Background threads do not prevent a process from terminating. Once all foreground threads belonging to a process have terminated, the common language runtime ends the process. Any remaining background threads are stopped and do not complete.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.SimpleThreadPool.SpawnNewActiveThreads(System.Int32)">
+            <summary>
+            Creates new threads and signal them to begin working.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.SimpleThreadPool.SpawnNewIdleThreads(System.Int32)">
+            <summary>
+            Creates new thread but does not signal them. Instead, the threads are added to the pool of idle threads.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.SimpleThreadPool.Stop">
+            <summary>
+            Aborts all idle threads, prevents the creation of new threads, and prevents new actions from being enqueued.  This cannot be undone.
+            </summary>
+        </member>
+        <member name="T:BPUtil.SimpleHttp.GlobalThrottledStream">
+            <summary>
+            A stream that throttles read and write operations.  The throttled speed varies depending on the number of other competing streams, in order to meet application-wide speed limits.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.#ctor(System.IO.Stream,System.Int32,System.UInt32)">
+            <summary>
+            Initialized a GlobalThrottledStream.
+            </summary>
+            <param name="originalStream">The stream to throttle.</param>
+            <param name="ruleSetId">The numeric ID  of the throttling ruleset that will be applied to this stream.  If an invalid ruleSetId is provided, no throttling will be done.</param>
+            <param name="remoteIpAddress">The remote IP address that will be receiving this stream.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.  This method blocks until the throttled read operation has completed.
+            </summary>
+            <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between offset and (offset + count - 1) replaced by the bytes read from the current source.</param>
+            <param name="offset">The zero-based byte offset in buffer at which to begin storing the data read from the current stream.</param>
+            <param name="count">The maximum number of bytes to be read from the current stream.</param>
+            <returns>
+            The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
+            </returns>
+            <exception cref="T:System.ArgumentException">The sum of offset and count is larger than the buffer length. </exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+            <exception cref="T:System.NotSupportedException">The base stream does not support reading. </exception>
+            <exception cref="T:System.ArgumentNullException">buffer is null. </exception>
+            <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">offset or count is negative. </exception>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Writes a sequence of bytes to the current stream and advances the current position within this stream by the number of bytes written.  This method blocks until the throttled write operation has completed.
+            </summary>
+            <param name="buffer">An array of bytes. This method copies count bytes from buffer to the current stream.</param>
+            <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the current stream.</param>
+            <param name="count">The number of bytes to be written to the current stream.</param>
+            <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+            <exception cref="T:System.NotSupportedException">The base stream does not support writing. </exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+            <exception cref="T:System.ArgumentNullException">buffer is null. </exception>
+            <exception cref="T:System.ArgumentException">The sum of offset and count is greater than the buffer length. </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">offset or count is negative. </exception>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.GlobalThrottledStream.CanRead">
+            <summary>
+            Gets a value indicating whether the current stream supports reading.
+            </summary>
+            <returns>true if the stream supports reading; otherwise, false.</returns>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.GlobalThrottledStream.CanSeek">
+            <summary>
+            Gets a value indicating whether the current stream supports seeking.
+            </summary>
+            <value></value>
+            <returns>true if the stream supports seeking; otherwise, false.</returns>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.GlobalThrottledStream.CanWrite">
+            <summary>
+            Gets a value indicating whether the current stream supports writing.
+            </summary>
+            <value></value>
+            <returns>true if the stream supports writing; otherwise, false.</returns>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.GlobalThrottledStream.Length">
+            <summary>
+            Gets the length in bytes of the stream.
+            </summary>
+            <value></value>
+            <returns>A long value representing the length of the stream in bytes.</returns>
+            <exception cref="T:System.NotSupportedException">The base stream does not support seeking. </exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.GlobalThrottledStream.Position">
+            <summary>
+            Gets or sets the position within the current stream.
+            </summary>
+            <value></value>
+            <returns>The current position within the stream.</returns>
+            <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+            <exception cref="T:System.NotSupportedException">The base stream does not support seeking. </exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.Flush">
+            <summary>
+            Clears all buffers for this stream and causes any buffered data to be written to the underlying device.
+            </summary>
+            <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Sets the position within the current stream.
+            </summary>
+            <param name="offset">A byte offset relative to the origin parameter.</param>
+            <param name="origin">A value of type <see cref="T:System.IO.SeekOrigin"></see> indicating the reference point used to obtain the new position.</param>
+            <returns>
+            The new position within the current stream.
+            </returns>
+            <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+            <exception cref="T:System.NotSupportedException">The base stream does not support seeking, such as if the stream is constructed from a pipe or console output. </exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.SetLength(System.Int64)">
+            <summary>
+            Sets the length of the current stream.
+            </summary>
+            <param name="value">The desired length of the current stream in bytes.</param>
+            <exception cref="T:System.NotSupportedException">The base stream does not support both writing and seeking, such as if the stream is constructed from a pipe or console output. </exception>
+            <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.ThrottlingManager.Initialize(System.Int32)">
+            <summary>
+            Calling this will enable web server bandwidth throttling and create the specified number of throttling rule sets and initialize them all to "unlimited" speed.
+            
+            After calling this, you should modify each rule set via ThrottlingManager.BurstIntervalMs and ThrottlingManager.SetBytesPerSecond().
+            
+            You should only call this function once; additional calls will do nothing.
+            
+            Please note: throttling is incompatible with ASP.NET
+            </summary>
+            <param name="numberOfThrottlingRuleSetsToCreate"></param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.ThrottlingManager.Shutdown">
+            <summary>
+            Call this when it is time to shut down the app.  Any active, throttled I/O operations will stop because the scheduling thread will be shut down.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.GlobalThrottledStream.ThrottlingManager.BurstIntervalMs">
+            <summary>
+            Gets or sets the number of milliseconds between data reads/writes.  When setting this, the value will be clamped between 1 and 1000.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.ThrottlingManager.SetBytesPerSecond(System.Int32,System.Int64)">
+            <summary>
+            Sets the bytes per second throttle for this rule.  All streams using this rule share the same bandwidth pool that you set here.  (can be set at any time, even while streams are active).
+            
+            If less than 0, the value is clamped to 0.
+            If 0, the streams using this rule will be unthrottled.
+            </summary>
+            <param name="ruleSetId"></param>
+            <param name="bytesPerSecond"></param>
+        </member>
+        <member name="T:BPUtil.SimpleHttp.GlobalThrottledStream.ThrottlingRuleSet">
+            <summary>
+            Performs I/O operations for a group of streams.
+            </summary>
+        </member>
+        <member name="T:BPUtil.SimpleHttp.GlobalThrottledStream.IOOperation">
+            <summary>
+            Maintans the state of a throttled read or write operation.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.GlobalThrottledStream.IOOperation.leftOverFractionalBytes">
+            <summary>
+            We can only transmit whole numbers of bytes, so this field stores the fractional remainder.
+            This fractional part must be counted, or else data transmission will stop entirely if the 
+            allowed bytes per interval goes below 1.
+            </summary>
+        </member>
+        <member name="T:BPUtil.SimpleHttp.GlobalThrottledStream.EventWaitHandleWrapper">
+            <summary>
+            Contains an EventWaitHandle and a value indicating the number of bytes that may be processed after the EventWaitHandle is released.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.tcpClient">
+            <summary>
+            The underlying tcpClient which handles the network connection.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.srv">
+            <summary>
+            The HttpServer instance that accepted this request.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.outputStream">
+            <summary>
+            Be careful to flush each output stream before using a different one!!
+            
+            This stream is for writing text data.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.rawOutputStream">
+            <summary>
+            Be careful to flush each output stream before using a different one!!
+            
+            This stream is for writing binary data.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.requestCookies">
+            <summary>
+            The cookies sent by the remote client.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.responseCookies">
+            <summary>
+            The cookies to send to the remote client.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.http_method">
+            <summary>
+            The Http method used.  i.e. "POST" or "GET"
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.base_uri_this_server">
+            <summary>
+            The base Uri for this server, containing its host name and port.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.request_url">
+            <summary>
+            The requested url.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.http_protocol_versionstring">
+            <summary>
+            The protocol version string sent by the client.  e.g. "HTTP/1.1"
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.requestedPage">
+            <summary>
+            The path to and name of the requested page, not including the first '/'
+            
+            For example, if the URL was "/articles/science/moon.html?date=2011-10-21", requestedPage would be "articles/science/moon.html"
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.httpHeaders">
+            <summary>
+            A Dictionary mapping http header names to values. Names are all converted to lower case before being added to this Dictionary.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.httpHeadersRaw">
+            <summary>
+            A Dictionary mapping http header names to values. Names are left in their raw form, and may include capital letters.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.PostParams">
+            <summary>
+            A SortedList mapping lower-case keys to values of parameters.  This list is populated if and only if the request was a POST request with mimetype "application/x-www-form-urlencoded".
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.RawPostParams">
+            <summary>
+            A SortedList mapping keys to values of parameters.  No character case conversion is applied in this list.  This list is populated if and only if the request was a POST request with mimetype "application/x-www-form-urlencoded".
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.QueryString">
+            <summary>
+            A SortedList mapping lower-case keys to values of parameters.  This list is populated parameters that were appended to the url (the query string).  e.g. if the url is "mypage.html?arg1=value1&amp;arg2=value2", then there will be two parameters ("arg1" with value "value1" and "arg2" with value "value2")
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.RawQueryString">
+            <summary>
+            A SortedList mapping keys to values of parameters.  No character case conversion is applied in this list.  This list is populated parameters that were appended to the url (the query string).  e.g. if the url is "mypage.html?arg1=value1&amp;arg2=value2", then there will be two parameters ("arg1" with value "value1" and "arg2" with value "value2")
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.postContentType">
+            <summary>
+            The mimetype of the posted content.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.postFormDataRaw">
+            <summary>
+            The raw posted content as a string, populated only if the mimetype was "application/x-www-form-urlencoded"
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.responseWritten">
+            <summary>
+            A flag that is set when WriteSuccess(), WriteFailure(), or WriteRedirect() is called.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpProcessor.IsLanConnection">
+            <summary>
+            Returns true if the remote client's ipv4 address is in the same class C range as any of the server's ipv4 addresses.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpProcessor.RemoteIPAddress">
+            <summary>
+            Returns the remote client's IP address, or an empty string if the remote IP address is somehow not available.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpProcessor.RemoteIPAddressInt">
+            <summary>
+            Returns the remote client's IPv4 address as a 32 bit unsigned integer.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.process">
+            <summary>
+            Processes the request.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.parseRequest">
+            <summary>
+            Parses the first line of the http request to get the request method, url, and protocol version.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.readHeaders">
+            <summary>
+            Parses the http headers
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.handleGETRequest">
+            <summary>
+            Asks the HttpServer to handle this request as a GET request.  If the HttpServer does not write a response code header, this will write a generic failure header.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.handlePOSTRequest">
+            <summary>
+            This post data processing just reads everything into a memory stream.
+            This is fine for smallish things, but for large stuff we should really
+            hand an input stream to the request processor. However, the input stream 
+            we hand to the user's code needs to see the "end of the stream" at this 
+            content length, because otherwise it won't know where the end is!
+            
+            If the HttpServer does not write a response code header, this will write a generic failure header.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.writeSuccess(System.String,System.Int64,System.String,System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            Writes the response headers for a successful response.  Call this one time before writing your response, after you have determined that the request is valid.
+            </summary>
+            <param name="contentType">The MIME type of your response.</param>
+            <param name="contentLength">(OPTIONAL) The length of your response, in bytes, if you know it.</param>
+            <param name="responseCode">(OPTIONAL) The response code and optional status string.</param>
+            <param name="additionalHeaders">(OPTIONAL) Additional headers to include in the response.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.writeFailure(System.String,System.String)">
+            <summary>
+            Writes a failure response header.  Call this one time to return an error response.
+            </summary>
+            <param name="code">(OPTIONAL) The http error code (including explanation entity).  For example: "404 Not Found" where 404 is the error code and "Not Found" is the explanation.</param>
+            <param name="description">(OPTIONAL) A description string to send after the headers as the response.  This is typically shown to the remote user in his browser.  If null, the code string is sent here.  If "", no response body is sent by this function, and you may or may not want to write your own.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.writeRedirect(System.String)">
+            <summary>
+            Writes a redirect header instructing the remote user's browser to load the URL you specify.  Call this one time and do not write any other data to the response stream.
+            </summary>
+            <param name="redirectToUrl">URL to redirect to.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.writeWebSocketProxy">
+            <summary>
+            Writes response headers to finish the WebSocket handshake with the client. No extensions are supported (such as compression) at this time.
+            This method is supposed to facilitate linking two WebSocket clients together using this server as a proxy.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetHeaderValue(System.String,System.String)">
+            <summary>
+            Gets the value of the header, or null if the header does not exist.  The name is case insensitive.
+            </summary>
+            <param name="name">The case insensitive name of the header to get the value of.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist.</param>
+            <returns>The value of the header, or null if the header did not exist.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.ParseQueryStringArguments(System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Parses the specified query string and returns a sorted list containing the arguments found in the specified query string.  Can also be used to parse the POST request body if the mimetype is "application/x-www-form-urlencoded".
+            </summary>
+            <param name="queryString"></param>
+            <param name="requireQuestionMark"></param>
+            <param name="preserveKeyCharacterCase">(Optional) If true, query string argument keys will be case sensitive.</param>
+            <param name="convertPlusToSpace">(Optional) If true, query string argument values will have any plus signs converted to spaces before URL decoding.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetParam(System.String)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <returns>The value of the key, or empty string if the key does not exist or has no value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetIntParam(System.String,System.Int32)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetLongParam(System.String,System.Int64)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetDoubleParam(System.String,System.Int32)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetBoolParam(System.String)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value. This function interprets a value of "1" or "true" (case insensitive) as being true.  Any other parameter value is interpreted as false.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetQSParam(System.String)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <returns>The value of the key, or empty string if the key does not exist or has no value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetQSIntParam(System.String,System.Int32)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetQSLongParam(System.String,System.Int64)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetQSDoubleParam(System.String,System.Double)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetQSBoolParam(System.String)">
+            <summary>
+            Returns the value of the Query String parameter with the specified key.
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value. This function interprets a value of "1" or "true" (case insensitive) as being true.  Any other parameter value is interpreted as false.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetPostParam(System.String)">
+            <summary>
+            Returns the value of a parameter sent via POST with MIME type "application/x-www-form-urlencoded".
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <returns>The value of the key, or empty string if the key does not exist or has no value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetPostIntParam(System.String,System.Int32)">
+            <summary>
+            Returns the value of a parameter sent via POST with MIME type "application/x-www-form-urlencoded".
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetPostLongParam(System.String,System.Int64)">
+            <summary>
+            Returns the value of a parameter sent via POST with MIME type "application/x-www-form-urlencoded".
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetPostDoubleParam(System.String,System.Double)">
+            <summary>
+            Returns the value of a parameter sent via POST with MIME type "application/x-www-form-urlencoded".
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <param name="defaultValue">The default value to return, in case the value did not exist or was not compatible with the data type.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetPostBoolParam(System.String)">
+            <summary>
+            Returns the value of a parameter sent via POST with MIME type "application/x-www-form-urlencoded".
+            </summary>
+            <param name="key">A case insensitive key.</param>
+            <returns>The value of the key, or [defaultValue] if the key does not exist or has no suitable value. This function interprets a value of "1" or "true" (case insensitive) as being true.  Any other parameter value is interpreted as false.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.CheckIfStillConnected">
+            <summary>
+            Polls the socket to see if it has closed.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpServer.port">
+            <summary>
+            If > -1, the server was told to listen for http connections on this port.  Port 0 causes the socket library to choose its own port.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpServer.secure_port">
+            <summary>
+            If > -1, the server was told to listen for https connections on this port.  Port 0 causes the socket library to choose its own port.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpServer.Port_http">
+            <summary>
+            The actual port the http server is listening on.  Will be -1 if not listening.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpServer.Port_https">
+            <summary>
+            The actual port the http server is listening on.  Will be -1 if not listening.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.#ctor(System.Int32,System.Int32,System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            
+            </summary>
+            <param name="port">The port number on which to accept regular http connections. If -1, the server will not listen for http connections.</param>
+            <param name="httpsPort">(Optional) The port number on which to accept https connections. If -1, the server will not listen for https connections.</param>
+            <param name="cert">(Optional) Certificate to use for https connections.  If null and an httpsPort was specified, a certificate is automatically created if necessary and loaded from "SimpleHttpServer-SslCert.pfx" in the same directory that the current executable is located in.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.listen(System.Object)">
+            <summary>
+            Listens for connections, somewhat robustly.  Does not return until the server is stopped or until more than 100 listener restarts occur in a single day.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.Start">
+            <summary>
+            Starts listening for connections.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.Stop">
+            <summary>
+            Stops listening for connections.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.Join(System.Int32)">
+            <summary>
+            Blocks the calling thread until the http listening threads finish or the timeout expires.  Call this after calling Stop() if you need to wait for the listener to clean up, such as if you intend to start another instance of the server using the same port(s).
+            </summary>
+            <param name="timeout_milliseconds">Maximum number of milliseconds to wait for the HttpServer Threads to stop.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.handleGETRequest(BPUtil.SimpleHttp.HttpProcessor)">
+            <summary>
+            Handles an Http GET request.
+            </summary>
+            <param name="p">The HttpProcessor handling the request.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.handlePOSTRequest(BPUtil.SimpleHttp.HttpProcessor,System.IO.StreamReader)">
+            <summary>
+            Handles an Http POST request.
+            </summary>
+            <param name="p">The HttpProcessor handling the request.</param>
+            <param name="inputData">The input stream.  If the request's MIME type was "application/x-www-form-urlencoded", the StreamReader will be null and you can obtain the parameter values using p.PostParams, p.GetPostParam(), p.GetPostIntParam(), etc.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.stopServer">
+            <summary>
+            This is called when the server is stopping.  Perform any cleanup work here.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Cookies.Add(System.String,System.String)">
+            <summary>
+            Adds a cookie with the specified name and value.  The cookie is set to expire immediately at the end of the browsing session.
+            </summary>
+            <param name="name">The cookie's name.</param>
+            <param name="value">The cookie's value.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Cookies.Add(System.String,System.String,System.TimeSpan)">
+            <summary>
+            Adds a cookie with the specified name, value, and lifespan.
+            </summary>
+            <param name="name">The cookie's name.</param>
+            <param name="value">The cookie's value.</param>
+            <param name="expireTime">The amount of time before the cookie should expire.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Cookies.Get(System.String)">
+            <summary>
+            Gets the cookie with the specified name.  If the cookie is not found, null is returned;
+            </summary>
+            <param name="name">The name of the cookie.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Cookies.GetValue(System.String)">
+            <summary>
+            Gets the value of the cookie with the specified name.  If the cookie is not found, an empty string is returned;
+            </summary>
+            <param name="name">The name of the cookie.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Cookies.ToString">
+            <summary>
+            Returns a string of "Set-Cookie: ..." headers (one for each cookie in the collection) separated by "\r\n".  There is no leading or trailing "\r\n".
+            </summary>
+            <returns>A string of "Set-Cookie: ..." headers (one for each cookie in the collection) separated by "\r\n".  There is no leading or trailing "\r\n".</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Cookies.FromString(System.String)">
+            <summary>
+            Returns a Cookies instance populated by parsing the specified string.  The string should be the value of the "Cookie" header that was received from the remote client.  If the string is null or empty, an empty cookies collection is returned.
+            </summary>
+            <param name="str">The value of the "Cookie" header sent by the remote client.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Extensions.ToCookieTime(System.DateTime)">
+            <summary>
+            Returns the date and time formatted for insertion as the expiration date in a "Set-Cookie" header.
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.Extensions.WriteLineRN(System.IO.TextWriter,System.String)">
+            <summary>
+            For linux compatibility. The HTTP protocol uses \r\n, but linux normally uses just \n.
+            </summary>
+            <param name="sw"></param>
+            <param name="line"></param>
+        </member>
+        <member name="T:BPUtil.SimpleHttp.SimpleHttpLogger">
+            <summary>
+            A class which handles error logging by the http server.  It allows you to (optionally) register an ILogger instance to use for logging.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.SimpleHttpLogger.RegisterLogger(BPUtil.SimpleHttp.ILogger,System.Boolean)">
+            <summary>
+            (OPTIONAL) Keeps a static reference to the specified ILogger and uses it for http server error logging.  Only one logger can be registered at a time; attempting to register a second logger simply replaces the first one.
+            </summary>
+            <param name="loggerToRegister">The logger that should be used when an error message needs logged.  If null, logging will be disabled.</param>
+            <param name="logVerboseMessages">If true, additional error reporting will be enabled.  These errors include things that can occur frequently during normal operation, so it may be spammy.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.SimpleHttpLogger.UnregisterLogger">
+            <summary>
+            Unregisters the currently registered logger (if any) by calling RegisterLogger(null);
+            </summary>
+        </member>
+        <member name="T:BPUtil.SimpleHttp.ILogger">
+            <summary>
+            An interface which handles logging of exceptions and strings.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.ILogger.Log(System.Exception,System.String)">
+            <summary>
+            Log an exception, possibly with additional information provided to assist with debugging.
+            </summary>
+            <param name="ex">An exception that was caught.</param>
+            <param name="additionalInformation">Additional information about the exception.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.ILogger.Log(System.String)">
+            <summary>
+            Log a string.
+            </summary>
+            <param name="str">A string to log.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.ILogger.LogRequest(System.DateTime,System.String)">
+            <summary>
+            Log a request that was made to the server.
+            </summary>
+            <param name="time">The time of the request, from which the log file name will be chosen.</param>
+            <param name="line">The string to log, including a timestamp and all information desired. This string should not contain line breaks.</param>
+        </member>
+        <member name="T:BPUtil.Try">
+            <summary>
+            Contains static methods to execute code with simple predefined exception handlers.
+            </summary>
+        </member>
+        <member name="M:BPUtil.Try.Swallow(System.Action)">
+            <summary>
+            Runs the specified Action inside a try block and swallows all exceptions.
+            </summary>
+            <param name="actionToTry"></param>
+        </member>
+        <member name="M:BPUtil.Try.SwallowBool(System.Func{System.Boolean})">
+            <summary>
+            Runs the specified Func (returning bool) inside a try block and swallows all exceptions.  Returns false in the event of an exception, otherwise whatever the Func returned.
+            </summary>
+            <param name="funcBoolToTry"></param>
+        </member>
+        <member name="M:BPUtil.Try.Catch(System.Action)">
+            <summary>
+            Runs the specified Action inside a try block and logs all exceptions.
+            </summary>
+            <param name="actionToTry"></param>
+        </member>
+        <member name="M:BPUtil.Try.Catch_RethrowThreadAbort(System.Action)">
+            <summary>
+            Runs the specified Action inside a try block and logs all exceptions except ThreadAbortException, which is rethrown.
+            </summary>
+            <param name="actionToTry"></param>
+        </member>
+        <member name="M:BPUtil.Try.CatchBool(System.Func{System.Boolean})">
+            <summary>
+            Runs the specified Func (returning bool) inside a try block and logs all exceptions.  Returns false in the event of an exception, otherwise whatever the Func returned.
+            </summary>
+            <param name="funcBoolToTry"></param>
+        </member>
+        <member name="F:BPUtil.WaitProgressivelyLonger.sleepTimeCutoff">
+            <summary>
+            sleepTime will not increase if it is greater than this value.
+            </summary>
+        </member>
+        <member name="F:BPUtil.WaitProgressivelyLonger.sleepTimeModifierMs">
+            <summary>
+            sleepTime increases by this much each time Wait is called.
+            </summary>
+        </member>
+        <member name="M:BPUtil.WaitProgressivelyLonger.#ctor(System.Int32,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="maxSleepTimeMs">The waiting time will not increase past this value</param>
+            <param name="sleepTimeModifierMs">The waiting time will increase by this much each time Wait() is called.</param>
+        </member>
+    </members>
+</doc>
