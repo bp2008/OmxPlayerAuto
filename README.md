@@ -27,7 +27,8 @@ sudo mono OmxPlayerAuto.exe
 At this point, the program should start its embedded web server and wait for you to configure it.
 6) Enter your Raspberry Pi's IP address into any web browser on your network. If you don't know how to find your Pi's IP address, google it.
 
-If all goes well you should get an ugly web page that looks like this:  
+If all goes well you should get an ugly web page that looks like this:
+
 ![screenshot](http://i.imgur.com/NMlSeFim.jpg)
 
 ### Starting the program automatically when the pi boots up
