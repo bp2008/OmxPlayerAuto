@@ -29,7 +29,7 @@ At this point, the program should start its embedded web server and wait for you
 
 If all goes well you should get an ugly web page that looks like this:
 
-![screenshot](http://i.imgur.com/NMlSeFim.jpg)
+![screenshot](http://i.imgur.com/NMlSeFi.jpg)
 
 ### Starting the program automatically when the pi boots up
 
