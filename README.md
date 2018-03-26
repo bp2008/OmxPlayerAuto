@@ -1,9 +1,9 @@
 # OmxPlayerAuto
 A .net/mono project designed for Raspberry Pi which enables basic remote management of omxplayer instances for the creation of a video wall.
 
-##Installation instructions
+## Installation instructions
 
-###Prerequisites
+### Prerequisites
 
 I recommend you use a recent version of the Raspbian operating system, and have it configured to boot directly to the desktop without requiring authentication.
 
@@ -11,7 +11,7 @@ You need the mono runtime to be installed. You can install it by opening a termi
 ```
 sudo apt-get install mono-complete
 ```
-###Installation
+### Installation
 
 1) Create a new folder to contain the program files. e.g. "/home/pi/omxplayerauto"
 2) Download or copy an OmxPlayerAuto release to this new folder.
@@ -30,7 +30,7 @@ At this point, the program should start its embedded web server and wait for you
 If all goes well you should get an ugly web page that looks like this:
 ![screenshot](http://i.imgur.com/NMlSeFim.jpg)
 
-###Starting the program automatically when the pi boots up
+### Starting the program automatically when the pi boots up
 
 There are many ways to do this. I'll show you how I do it on my system.
 
