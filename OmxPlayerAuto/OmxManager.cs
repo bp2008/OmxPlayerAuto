@@ -33,6 +33,7 @@ namespace OmxPlayerAuto
 		private double cpuUsage = 0;
 		/// <summary>
 		/// The CPU usage of the omxplayer.bin process being managed by this instance.
+		/// This value is a percentage, not a simple ratio, and therefore the typical range is (0.0) to (100.0 * number of logical cores).
 		/// </summary>
 		public double CpuUsage
 		{
@@ -72,9 +73,9 @@ namespace OmxPlayerAuto
 					try
 					{
 						RestartProcess();
-
-						const double LowCpuLimit = 0.1;
-						const int MaxLowCpuCount = 10;
+						
+						const double LowCpuLimit = 0.1; // CPU usage below this threshold indicates the process is idle.
+						const int MaxLowCpuCount = 15; // CPU usage can be below the threshold this many times in a row without consequence.
 						int lowCpuCounter = 0;
 						while (true)
 						{
@@ -99,7 +100,7 @@ namespace OmxPlayerAuto
 								break;
 							}
 
-							Thread.Sleep(1000);
+							Thread.Sleep(2000);
 						}
 
 						StopProcess();
@@ -131,15 +132,31 @@ namespace OmxPlayerAuto
 		{
 			if (binProc != null)
 			{
-				if (!binProc.HasExited)
-					Try.Catch_RethrowThreadAbort(() => binProc.Kill());
+				try
+				{
+					if (!binProc.HasExited)
+						binProc.Kill();
+				}
+				catch (ThreadAbortException) { throw; }
+				catch (Exception ex)
+				{
+					Logger.Debug(ex, "binProc");
+				}
 				binProc.Dispose();
 				binProc = null;
 			}
 			if (proc != null)
 			{
-				if (!proc.HasExited)
-					Try.Catch_RethrowThreadAbort(() => proc.Kill());
+				try
+				{
+					if (!proc.HasExited)
+						proc.Kill();
+				}
+				catch (ThreadAbortException) { throw; }
+				catch (Exception ex)
+				{
+					Logger.Debug(ex, "proc");
+				}
 				proc.Dispose();
 				proc = null;
 			}
@@ -187,7 +204,7 @@ namespace OmxPlayerAuto
 			{
 				cpuUsage = cpuReader.NextValue();
 				lastCpuUsageCalcTime = now;
-				
+
 				// binProc.TotalProcessorTime always returns zero even after calling Refresh().  Yay bugs!  So we're using PerformanceCounter instead as seen above.
 				//binProc.Refresh();
 				//double cpuTotalSeconds = binProc.TotalProcessorTime.TotalSeconds;
