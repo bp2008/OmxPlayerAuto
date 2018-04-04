@@ -16,9 +16,9 @@ sudo apt-get install mono-complete
 1) Create a new folder to contain the program files. e.g. "/home/pi/omxplayerauto"
 2) Download or copy an OmxPlayerAuto release to this new folder.
 3) Open a terminal in the folder (one way to do this is through the menu: Tools > Open Current Folder in Terminal)
-4) Run the unzip command:
+4) Run the unzip command (adjust file name as necessary):
 ```
-unzip OmxPlayerAuto_1.0.zip
+unzip OmxPlayerAuto_1.1.zip
 ```
 5) Start OmxPlayerAuto.exe with this command:
 ```
