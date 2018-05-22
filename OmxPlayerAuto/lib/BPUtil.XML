@@ -4,12 +4,277 @@
         <name>BPUtil</name>
     </assembly>
     <members>
+        <member name="T:BPUtil.BasicEventTimer">
+             <summary>
+             A class which makes it easy to time different parts of a procedure individually and later report the time in seconds taken for each part.
+             
+             Example:
+             
+             BasicEventTimer timer = new BasicEventTimer();
+             
+             timer.Start("Event 1");
+             timed_procedure_1();
+            
+             timer.Start("Event 2");
+             timed_procedure_2();
+             timer.Stop();
+             
+             untimed_procedure();
+             
+             timer.Start("Event 3");
+             timed_procedure_3();
+             timer.Stop();
+             
+             Console.WriteLine(timer.ToString(Environment.NewLine));
+             
+             Example output:
+             0.01 - Procedure 1
+             50.15 - Procedure 2
+             1.51 - Procedure 3
+             </summary>
+        </member>
+        <member name="M:BPUtil.BasicEventTimer.Reset">
+            <summary>
+            Stops the timer and clears the list of timed events, restoring this instance to its original state.
+            </summary>
+        </member>
+        <member name="M:BPUtil.BasicEventTimer.Start(System.String)">
+            <summary>
+            Starts timing a new event, automatically stopping and logging the time for the previous event, if there was one.
+            </summary>
+            <param name="eventName"></param>
+        </member>
+        <member name="M:BPUtil.BasicEventTimer.Stop">
+            <summary>
+            Stops and logs the time for the previously started event, if there was one.
+            </summary>
+        </member>
+        <member name="M:BPUtil.BasicEventTimer.ToString">
+            <summary>
+            Returns an string containing the time in seconds measured for each event.  Events are separated by HTML "br" tags.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.BasicEventTimer.ToString(System.String)">
+            <summary>
+            Returns a string containing the time in seconds measured for each event.  Events are separated by the specified string.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:BPUtil.ByteUtil">
+            <summary>
+            Contains helpful methods for working with binary data.
+            </summary>
+        </member>
+        <member name="M:BPUtil.ByteUtil.ByteArraysMatch(System.Byte[],System.Byte[])">
+            <summary>
+            Returns true of the content of the specified byte arrays exactly match each other, or if both arrays are null.
+            </summary>
+            <param name="a">An array to compare.</param>
+            <param name="b">An array to compare.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.CompareWithMask(System.Byte[],System.Byte[],System.Byte[])">
+            <summary>
+            <para>Returns true if the specified byte arrays `a` and `b` are the same length and if every bit which is set in `mask` is the same between `a` and `b`.</para>
+            <para>e.g.</para>
+            <para>a = 01</para>
+            <para>b = 00</para>
+            <para>If mask = 10 or mask = 00 then true. Because the second bit is not set in mask, it does not get compared.  If mask = 01 or mask = 11 then false.</para>
+            </summary>
+            <param name="a">An array to compare.</param>
+            <param name="b">An array to compare.</param>
+            <param name="mask">An array of equal or lesser length to `a` and `b`.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.XORByteArrays(System.Byte[],System.Byte[])">
+            <summary>
+            Returns a new array containing the values of the first array XORed with the values of the second array.
+            </summary>
+            <param name="a">An array.</param>
+            <param name="b">An array.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.BitwiseAnd(System.Byte[],System.Byte[])">
+            <summary>
+            Computes the "bitwise and" of the values in each array, and returns a new array containing the results.
+            e.g. [0,1,1] &amp; [1,0,1] = [0,0,1]
+            </summary>
+            <param name="a">An array.</param>
+            <param name="b">An array.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.BitwiseOr(System.Byte[],System.Byte[])">
+            <summary>
+            Computes the "bitwise or" of the values in each array, and returns a new array containing the results.
+            e.g. [0,1,1] | [1,0,1] = [1,1,1]
+            </summary>
+            <param name="a">An array.</param>
+            <param name="b">An array.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.InvertBits(System.Byte[])">
+            <summary>
+            Inverts every byte in the array. e.g. [0001] => [1110]
+            </summary>
+            <param name="a">An array.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.GetInverse(System.Byte[])">
+            <summary>
+            Returns a new byte array containing the inverse of the values of the source array. e.g. [0001] => [1110]
+            </summary>
+            <param name="a">An array.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.GenerateRandomBytes(System.Int32)">
+            <summary>
+            Generates a byte array of the specified length, filled with cryptographically strong random values.
+            </summary>
+            <param name="numBytes">The length of the byte array to create.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.ReadNBytes(BPUtil.IDataStream,System.Int32)">
+            <summary>
+            Reads a specific number of bytes from the stream, returning a byte array.  Ordinary stream.Read operations are not guaranteed to read all the requested bytes.
+            </summary>
+            <param name="s">The stream to read from.</param>
+            <param name="n">The number of bytes to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.ReadNBytes(System.IO.Stream,System.Int32)">
+            <summary>
+            Reads a specific number of bytes from the stream, returning a byte array.  Ordinary stream.Read operations are not guaranteed to read all the requested bytes.
+            </summary>
+            <param name="s">The stream to read from.</param>
+            <param name="n">The number of bytes to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.ReadNBytesFromNetworkOrder(System.IO.Stream,System.Int32)">
+            <summary>
+            Reads a specific number of bytes from the stream and performs NetworkToHostOrder on the resulting byte array before returning it.
+            </summary>
+            <param name="s">The stream to read from.</param>
+            <param name="n">The number of bytes to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.NetworkToHostOrder(System.Byte[])">
+            <summary>
+            If the current system is Little Endian, reverses the order of the bytes.
+            If the current system is Big Endian, the array is returned unmodified.
+            </summary>
+            <param name="buf">The byte array.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.SubArray(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Returns a new array containing the specified bytes from the source array.
+            </summary>
+            <param name="buf">The source byte array.</param>
+            <param name="offset">The offset to begin copying bytes at.</param>
+            <param name="length">The number of bytes to copy.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.NetworkToHostOrder(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Copies a section of the specified array into a new array and performs a NetworkToHostOrder operation on the array before returning it.
+            </summary>
+            <param name="buf">The source byte array.</param>
+            <param name="offset">The offset to begin copying bytes at.</param>
+            <param name="length">The number of bytes to copy.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.ReadUtf8(System.Byte[])">
+            <summary>
+            Converts all data from the buffer to a string assuming UTF8 encoding with no byte order mark.
+            </summary>
+            <param name="buffer">The buffer to convert.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.ReadUtf8(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads the specified number of bytes from the buffer and converts them to a string assuming UTF8 encoding with no byte order mark.
+            </summary>
+            <param name="buffer">The buffer to read from.</param>
+            <param name="offset">The offset to begin reading at.</param>
+            <param name="byteLength">The number of bytes to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ByteUtil.ReadUtf8(System.IO.Stream,System.Int32)">
+            <summary>
+            Reads the specified number of bytes from the stream and converts them to a string assuming UTF8 encoding with no byte order mark.
+            </summary>
+            <param name="s">The stream to read from.</param>
+            <param name="byteLength">The number of bytes to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ConsoleAppHelper.AllocateConsole">
+            <summary>
+            Creates a console window.  Use this once at startup, if desired, if your application does not normally 
+            allocate a console window (as configured in Project Properties - Application - Output type).
+            
+            Call this on Windows only.
+            </summary>
+        </member>
+        <member name="T:BPUtil.CookieAwareWebClient">
+            <summary>
+            A Cookie-aware WebClient that will store authentication cookie information and persist it through subsequent requests.
+            From: https://github.com/rionmonster/CookieAwareWebClient
+            </summary>
+        </member>
+        <member name="M:BPUtil.Extensions.GetMatches(System.Text.RegularExpressions.Regex,System.String)">
+            <summary>
+            Returns a collection of all successful matches.  The collection is empty if there are no successful match objects.
+            </summary>
+            <param name="rx"></param>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BPUtil.Forms.ServiceManager">
+            <summary>
+            A Windows Form which offers the ability to Install, Uninstall, Start, and Stop the current executable as a Windows Service.
+            This form can be extended with additional functionality in the form of `additionalButtons` passed to the constructor.
+            </summary>
+        </member>
+        <member name="M:BPUtil.Forms.ServiceManager.#ctor(System.String,System.String,BPUtil.Forms.ButtonDefinition[],System.Windows.Forms.Control)">
+            <summary>
+            
+            </summary>
+            <param name="Title">The title of the form (will appear in the title bar).</param>
+            <param name="ServiceName">The name of the Windows Service.</param>
+            <param name="additionalButtons">An array of buttons to add to the bottom of the form.  May be null.  You may specify the Text and Click handler for each button.  `null` buttons will still take up space, allowing more control over the layout.</param>
+            <param name="additionalControl">An additional Control to add to the bottom of the form, above any additional buttons.</param>
+        </member>
+        <member name="F:BPUtil.Forms.ServiceManager.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:BPUtil.Forms.ServiceManager.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:BPUtil.Forms.ServiceManager.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="M:BPUtil.Globals.Initialize(System.String,System.String)">
             <summary>
-            Call this to initialize global static variables.
+            Call this to initialize global static variables where the "WritableDirectoryBase" property is the same folder as the exe.
             </summary>
-            <param name="exePath">Pass in the path to the exe in the root directory of the application.  The directory must exist, but the exe name can just be a descriptive exe file name like "My Application.exe" and does not need to exist.</param>
+            <param name="exePath">Pass in the path to the exe in the root directory of the application.  The directory must exist, but the exe name can just be a descriptive exe file name like "My Application.exe" and does not need to exist.  The exe name is used to create the CommonApplicationDataBase string.</param>
             <param name="writablePath">A string to be appended to ApplicationDirectoryBase to create WritableDirectoryBase.  Example: "" or "writable/" or "somedir/writable/"</param>
+        </member>
+        <member name="M:BPUtil.Globals.InitializeProgram(System.String,System.String)">
+            <summary>
+            Call this to initialize global static variables where the "WritableDirectoryBase" property is in Environment.SpecialFolder.CommonApplicationData.
+            </summary>
+            <param name="exePath">Pass in the path to the exe in the root directory of the application.  The directory must exist, but the exe name can just be a descriptive exe file name like "My Application.exe" and does not need to exist.  The exe name is used to create the CommonApplicationDataBase string.</param>
+            <param name="programName">A globally unique program name that does not change and is unlikely to collide with other programs on the user's system.  This is used as part of the WritableDirectoryBase folder path, so you could pass in "MyApp" or to be even safer, "MyCompany/MyApp".</param>
         </member>
         <member name="P:BPUtil.Globals.ExecutableNameWithExtension">
             <summary>
@@ -38,7 +303,7 @@
         </member>
         <member name="P:BPUtil.Globals.ErrorFilePath">
             <summary>
-            Gets the full path to the error log file.  Includes trailing '/'.
+            Gets the full path to the error log file.
             </summary>
         </member>
         <member name="P:BPUtil.Globals.ConfigFilePath">
@@ -48,7 +313,7 @@
         </member>
         <member name="F:BPUtil.Globals.Version">
             <summary>
-            The BPUtil version number, not to be confused with the version number of the application this is included in.
+            The BPUtil version number, not to be confused with the version number of the application this is included in.  This version number is often neglected.
             </summary>
         </member>
         <member name="M:BPUtil.Hash.GetSHA512Bytes(System.Byte[],System.Byte[])">
@@ -67,6 +332,14 @@
             <param name="salt">A salt value to append directly to the end of the string's binary data before hashing.</param>
             <returns></returns>
         </member>
+        <member name="M:BPUtil.Hash.GetSHA512Hex(System.String)">
+            <summary>
+            Encodes the specified string as UTF8 and calculates the SHA512 hash of the data.
+            The hash is returned as a lower-case hexidecimal string 128 characters long.
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
         <member name="M:BPUtil.Hash.GetSHA256Bytes(System.Byte[],System.Byte[])">
             <summary>
             Computes the SHA256 hash of the specified binary data, optionally appending a binary salt value.
@@ -83,6 +356,105 @@
             <param name="salt">A salt value to append directly to the end of the string's binary data before hashing.</param>
             <returns></returns>
         </member>
+        <member name="M:BPUtil.Hash.GetSHA256Hex(System.String)">
+            <summary>
+            Encodes the specified string as UTF8 and calculates the SHA256 hash of the data.
+            The hash is returned as a lower-case hexidecimal string 64 characters long.
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Hash.GetSHA1Bytes(System.String,System.Byte[])">
+            <summary>
+            Computes the SHA1 hash of the specified string, optionally appending a binary salt value.
+            A SHA1 hash is 20 bytes (160 bits) long.
+            </summary>
+            <param name="s">The string to hash.</param>
+            <param name="salt">The salt value to append to the string before hashing.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Hash.GetSHA1Bytes(System.Byte[])">
+            <summary>
+            Computes the SHA1 hash of the specified data.
+            A SHA1 hash is 20 bytes (160 bits) long.
+            </summary>
+            <param name="data">The data to hash.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Hash.GetSHA1Hex(System.String)">
+            <summary>
+            Encodes the specified string as UTF8 and calculates the SHA1 hash of the data.
+            The hash is returned as a lower-case hexidecimal string 40 characters long.
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Hash.GetMD5Hex(System.String)">
+            <summary>
+            Encodes the specified string as UTF8 and calculates the MD5 hash of the data.
+            The hash is returned as a lower-case hexidecimal string 32 characters long.
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Hex.PrefixedHexToLong(System.String)">
+            <summary>
+            Converts a prefixed hex string (e.g. "0x185b8ae584") to a long.
+            </summary>
+            <param name="prefixedHex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.MemoryDataStream.#ctor(BPUtil.IDataStream,System.Int32)">
+            <summary>
+            Initializes a new non-resizable instance of the MemoryDataStream class by reading a specified number of bytes from the provided IDataStream.
+            </summary>
+            <param name="stream">The IDataStream to copy data from for initialization of the MemoryDataStream.</param>
+            <param name="length">The number of bytes to read from the IDataStream.  This will be the size of the new MemoryDataStream.</param>
+        </member>
+        <member name="M:BPUtil.MemoryDataStream.#ctor(System.IO.Stream,System.Int32)">
+            <summary>
+            Initializes a new non-resizable instance of the MemoryDataStream class by reading a specified number of bytes from the provided Stream.
+            </summary>
+            <param name="stream">The Stream to copy data from for initialization of the MemoryDataStream.</param>
+            <param name="length">The number of bytes to read from the Stream.  This will be the size of the new MemoryDataStream.</param>
+        </member>
+        <member name="M:BPUtil.MemoryDataStream.#ctor(System.Byte[])">
+            <summary>
+            Initializes a new non-resizable instance of the MemoryDataStream class based on the specified byte array.
+            </summary>
+            <param name="buffer">The array of unsigned bytes from which to create the current stream.</param>
+        </member>
+        <member name="M:BPUtil.MemoryDataStream.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the MemoryDataStream class with an expandable capacity initialized as specified.
+            </summary>
+            <param name="capacity">The initial size of the internal array in bytes.</param>
+        </member>
+        <member name="M:BPUtil.MemoryDataStream.#ctor">
+            <summary>
+            Initializes a new instance of the MemoryDataStream class with an expandable capacity initialized to zero.
+            </summary>
+        </member>
+        <member name="M:BPUtil.MemoryDataStream.Write(System.Byte[])">
+            <summary>
+            Writes a block of bytes to the current stream using data read from a buffer. With this overload, the entire buffer will be written.
+            </summary>
+            <param name="buffer">The buffer to write data from.</param>
+        </member>
+        <member name="M:BPUtil.MemoryDataStream.ReadNBytes(System.Int32)">
+            <summary>
+            Reads a specific number of bytes from the stream, returning a byte array.  Ordinary stream.Read operations are not guaranteed to read all the requested bytes.
+            </summary>
+            <param name="length">The number of bytes to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.MemoryDataStream.ReadNBytesFromNetworkOrder(System.Int32)">
+            <summary>
+            Reads a specific number of bytes from the stream, returning a byte array.  Ordinary stream.Read operations are not guaranteed to read all the requested bytes.
+            </summary>
+            <param name="length">The number of bytes to read.</param>
+            <returns></returns>
+        </member>
         <member name="M:BPUtil.HttpLogger.GetWebServerLogFilePathForToday(System.DateTime)">
             <summary>
             Gets the full path to the web server log file that should be used for events logged at the specified time.
@@ -93,6 +465,347 @@
             <summary>
             A class which can read a log file and keep a rolling view of the last 50000 lines of text, presenting them upon request by a client.
             </summary>
+        </member>
+        <member name="M:BPUtil.NumberUtil.BytesToGiB(System.Int64)">
+            <summary>
+            Converts the specified number of bytes to GiB (Gibibytes -- used in RAM and DISK sizes mostly).
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.NumberUtil.ToFixed1(System.Double)">
+            <summary>
+            Converts the specified double-precision number to a string with at most 1 decimal place.
+            </summary>
+            <param name="n"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.NumberUtil.ToFixed2(System.Double)">
+            <summary>
+            Converts the specified double-precision number to a string with at most 2 decimal places.
+            </summary>
+            <param name="n"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.NumberUtil.ToFixed3(System.Double)">
+            <summary>
+            Converts the specified double-precision number to a string with at most 3 decimal places.
+            </summary>
+            <param name="n"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.NumberUtil.ToFixed4(System.Double)">
+            <summary>
+            Converts the specified double-precision number to a string with at most 4 decimal places.
+            </summary>
+            <param name="n"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BPUtil.ObjectPool`1">
+            <summary>
+            A thread-safe pool where objects of a specific type can be stored and retrieved for later use. Pooling often-used or expensive-to-create objects can improve application performance at the cost of higher memory usage.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:BPUtil.ObjectPool`1.#ctor(System.Func{`0},System.Int32,System.Action{`0})">
+            <summary>
+            Creates an object pool.
+            </summary>
+            <param name="objectGenerator">A method which generates new objects of the desired type.</param>
+            <param name="maxSize">A limit for the pool capacity. Enforcement of this limit is not thread-synchronized, so it may be exceeded slightly if objects are put in the pool from multiple threads.</param>
+            <param name="automaticallyCalledWhenPoolingObject">The ObjectPool will call this method for each object that is about to be added to the pool. Usually, it is fine to let this be null. If you are putting something like a List in the pool, you may want this method to call List.Clear().</param>
+        </member>
+        <member name="M:BPUtil.ObjectPool`1.GetObject(System.Func{`0})">
+            <summary>
+            Gets an object from the pool, or constructs a new one if none are available. You should assume all fields of the object contain garbage data.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.ObjectPool`1.PutObject(`0)">
+            <summary>
+            Returns an object to the pool so it may be obtained by a later call to GetObject(). Do not use the object after passing it to this method (let it go out of scope).
+            </summary>
+            <remarks>
+            If the pool is currently at or above its max size, the item will not be pooled.
+            </remarks>
+            <param name="item"></param>
+        </member>
+        <member name="M:BPUtil.Platform.IsRunningOnMono">
+            <summary>
+            Returns true if Mono.Runtime is defined, indicating that this application is running in the mono environment instead of the official .NET runtime.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.Platform.IsUnix">
+            <summary>
+            Returns true if the current OS is Linux or MacOS X, etc (not Windows).
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.GetFieldValue``1(System.Object,System.String)">
+            <summary>
+            Gets the value of the specified private field of the specified object.
+            </summary>
+            <typeparam name="T">The type of the field.</typeparam>
+            <param name="obj">The object to change.</param>
+            <param name="name">The name of the private field.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.SetFieldValue(System.Object,System.String,System.Object)">
+            <summary>
+            Sets the value of the specified private field of the specified object.
+            </summary>
+            <param name="obj">The object to change.</param>
+            <param name="name">The name of the private field.</param>
+            <param name="value">The value to set.</param>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.GetPropertyValue``1(System.Object,System.String)">
+            <summary>
+            Gets the value of the specified private property of the specified object.
+            </summary>
+            <typeparam name="T">The type of the property.</typeparam>
+            <param name="obj">The object to change.</param>
+            <param name="name">The name of the private property.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.SetPropertyValue(System.Object,System.String,System.Object)">
+            <summary>
+            Sets the value of the specified private property of the specified object.
+            </summary>
+            <param name="obj">The object to change.</param>
+            <param name="name">The name of the private property.</param>
+            <param name="value">The value to set.</param>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.CallMethod``1(System.Object,System.String,System.Object[])">
+            <summary>
+            Calls the specified private method of the specified object.
+            </summary>
+            <typeparam name="T">The return value type.  If the private method's return type is `void`, simply pass `object` here and the call will return null.</typeparam>
+            <param name="obj">The object on which to call a private method.</param>
+            <param name="name">The name of the private method.</param>
+            <param name="param">Arguments to the private method.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.GetStaticFieldValue``1(System.Type,System.String)">
+            <summary>
+            Gets the value of the specified private static field.
+            </summary>
+            <typeparam name="T">The type of the field.</typeparam>
+            <param name="t">The type to which the static field belongs.</param>
+            <param name="name">The name of the private field.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.SetStaticFieldValue(System.Type,System.String,System.Object)">
+            <summary>
+            Sets the value of the specified private static field.
+            </summary>
+            <param name="t">The type to which the static field belongs.</param>
+            <param name="name">The name of the private field.</param>
+            <param name="value">The value to set.</param>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.GetStaticPropertyValue``1(System.Type,System.String)">
+            <summary>
+            Gets the value of the specified private static property.
+            </summary>
+            <typeparam name="T">The type of the property.</typeparam>
+            <param name="t">The type to which the static property belongs.</param>
+            <param name="name">The name of the private property.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.SetStaticPropertyValue(System.Type,System.String,System.Object)">
+            <summary>
+            Sets the value of the specified private static property.
+            </summary>
+            <param name="t">The type to which the static property belongs.</param>
+            <param name="name">The name of the private property.</param>
+            <param name="value">The value to set.</param>
+        </member>
+        <member name="M:BPUtil.PrivateAccessor.CallStaticMethod``1(System.Type,System.String,System.Object[])">
+            <summary>
+            Calls the specified private static method.
+            </summary>
+            <typeparam name="T">The return value type.  If the private method's return type is `void`, simply pass `object` here and the call will return null.</typeparam>
+            <param name="t">The type to which the static method belongs.</param>
+            <param name="name">The name of the private method.</param>
+            <param name="param">Arguments to the private method.</param>
+            <returns></returns>
+        </member>
+        <member name="T:BPUtil.SecureRandom">
+            <summary>
+            This class keeps an internal thread-safe CryptoRandom instance which does all the real work.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SecureRandom.Next">
+            <summary>
+            Returns a nonnegative random number.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SecureRandom.Next(System.Int32)">
+            <summary>
+            Returns a random number in the range [0, maxValue)
+            </summary>
+            <param name="maxValue">Exclusive maximum value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SecureRandom.Next(System.Int32,System.Int32)">
+            <summary>
+            Returns a random number in the range [minvalue, maxValue)
+            </summary>
+            <param name="minValue">Inclusive minimum value.</param>
+            <param name="maxValue">Exclusive maximum value.</param>
+            <returns></returns>
+        </member>
+        <member name="T:BPUtil.SecureRandom.CryptoRandom">
+            <summary>
+            A random number generator based on the RNGCryptoServiceProvider.
+            Adapted from the "Tales from the CryptoRandom" article in MSDN Magazine (September 2007)
+            but with explicit guarantee to be thread safe. Note that this implementation also includes
+            an optional (enabled by default) random buffer which provides a significant speed boost as
+            it greatly reduces the amount of calls into unmanaged land.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SecureRandom.CryptoRandom.IsRandomPoolEnabled">
+            <summary>
+            Gets a value indicating whether this instance has random pool enabled.
+            </summary>
+            <value>
+                <c>true</c> if this instance has random pool enabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:BPUtil.SecureRandom.CryptoRandom"/> class with.
+            Using this overload will enable the random buffer pool.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:BPUtil.SecureRandom.CryptoRandom"/> class.
+            This method will disregard whatever value is passed as seed and it's only implemented
+            in order to be fully backwards compatible with <see cref="T:System.Random"/>.
+            Using this overload will enable the random buffer pool.
+            </summary>
+            <param name="ignoredSeed">The ignored seed.</param>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:BPUtil.SecureRandom.CryptoRandom"/> class with
+            optional random buffer.
+            </summary>
+            <param name="enableRandomPool">set to <c>true</c> to enable the random pool buffer for increased performance.</param>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.Next">
+            <summary>
+            Returns a nonnegative random number.
+            </summary>
+            <returns>
+            A 32-bit signed integer greater than or equal to zero and less than <see cref="F:System.Int32.MaxValue"/>.
+            </returns>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.Next(System.Int32)">
+            <summary>
+            Returns a nonnegative random number less than the specified maximum.
+            </summary>
+            <param name="maxValue">The exclusive upper bound of the random number to be generated. <paramref name="maxValue"/> must be greater than or equal to zero.</param>
+            <returns>
+            A 32-bit signed integer greater than or equal to zero, and less than <paramref name="maxValue"/>; that is, the range of return values ordinarily includes zero but not <paramref name="maxValue"/>. However, if <paramref name="maxValue"/> equals zero, <paramref name="maxValue"/> is returned.
+            </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                <paramref name="maxValue"/> is less than zero.
+            </exception>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.Next(System.Int32,System.Int32)">
+            <summary>
+            Returns a random number within a specified range.
+            </summary>
+            <param name="minValue">The inclusive lower bound of the random number returned.</param>
+            <param name="maxValue">The exclusive upper bound of the random number returned. <paramref name="maxValue"/> must be greater than or equal to <paramref name="minValue"/>.</param>
+            <returns>
+            A 32-bit signed integer greater than or equal to <paramref name="minValue"/> and less than <paramref name="maxValue"/>; that is, the range of return values includes <paramref name="minValue"/> but not <paramref name="maxValue"/>. If <paramref name="minValue"/> equals <paramref name="maxValue"/>, <paramref name="minValue"/> is returned.
+            </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                <paramref name="minValue"/> is greater than <paramref name="maxValue"/>.
+            </exception>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.NextDouble">
+            <summary>
+            Returns a random number between 0.0 and 1.0.
+            </summary>
+            <returns>
+            A double-precision floating point number greater than or equal to 0.0, and less than 1.0.
+            </returns>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.NextBytes(System.Byte[])">
+            <summary>
+            Fills the elements of a specified array of bytes with random numbers.
+            </summary>
+            <param name="buffer">An array of bytes to contain random numbers.</param>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="buffer"/> is null.
+            </exception>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.GetRandomUInt32">
+            <summary>
+            Gets one random unsigned 32bit integer in a thread safe manner.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SecureRandom.CryptoRandom.EnsureRandomBuffer(System.Int32)">
+            <summary>
+            Ensures that we have enough bytes in the random buffer.
+            </summary>
+            <param name="requiredBytes">The number of required bytes.</param>
+        </member>
+        <member name="M:BPUtil.SerializableObjectBase.SaveIfNoExist(System.String)">
+            <summary>
+            (Thread-)Safely checks if the settings file exists, and if not, saves the current instance.
+            </summary>
+            <param name="filePath"></param>
+        </member>
+        <member name="M:BPUtil.SetTimeout.OnGui(System.Action,System.Int32,System.Windows.Forms.Form)">
+            <summary>
+            Invokes on the GUI thread the specified action after the specified timeout.
+            </summary>
+            <param name="TheAction">The action to run.</param>
+            <param name="Timeout">Values less than 0 are treated as 0.
+            If the Timeout value is 0 for an OnGui operation, the invoke process will start before this method returns, making it impossible to cancel the operation.</param>
+            <param name="formForInvoking">A System.Windows.Forms form, required to invoke your method on the GUI thread.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SetTimeout.OnBackground(System.Action,System.Int32)">
+            <summary>
+            Invokes on a background thread the specified action after the specified timeout.
+            </summary>
+            <param name="TheAction">The action to run.</param>
+            <param name="Timeout">Values less than 0 are treated as 0.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SetTimeout.AfterGuiResumesThenOnBackground(System.Action,System.Int32,System.Windows.Forms.Form)">
+            <summary>
+            Invokes a call to SetTimeout.OnBackground on the Gui Thread, so that other UI events have a chance to finish first.
+            This timeout will not be cancelable.
+            </summary>
+            <param name="TheAction">The action to run.</param>
+            <param name="Timeout">Values less than 0 are treated as 0.</param>
+            <param name="formForInvoking">A System.Windows.Forms form, required to invoke your method on the GUI thread.</param>
+            <returns></returns>
+        </member>
+        <member name="T:BPUtil.SetTimeout.TimeoutHandle">
+            <summary>
+            Allows cancellation of a scheduled operation up until the point that it begins. There is no confirmation if the cancelation was successful.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SetTimeout.TimeoutHandle.Cancel">
+            <summary>
+            Cancels this timeout, if it is still waiting.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SetTimeout.TimeoutHandle.Wait(System.Int32)">
+            <summary>
+            Waits up to the specified number of milliseconds and returns early with a value of true if the Cancel method was called during this time. Returns false at the end of the waiting period if not canceled.
+            </summary>
+            <param name="ms">The number of milliseconds to wait, or -1 to wait indefinitely.</param>
+            <returns></returns>
         </member>
         <member name="M:BPUtil.SimpleHttp.Crypto.CryptContext.#ctor">
             <summary>
@@ -109,66 +822,132 @@
             Typical check for derived classes
             </summary>
         </member>
-        <member name="F:BPUtil.SimpleHttp.SimpleThreadPool.idleThreads">
+        <member name="M:BPUtil.SimpleHttp.HttpCompressionHelper.FileTypeShouldBeCompressed(System.String)">
             <summary>
-            A stack of threads that are idle.
+            Returns true if the specified file extension has been flagged for compression (e.g. .html, .htm, .txt, .js, .css, .svg, .xml).
             </summary>
-        </member>
-        <member name="F:BPUtil.SimpleHttp.SimpleThreadPool.actionQueue">
-            <summary>
-            A queue of actions to be performed by threads.
-            </summary>
-        </member>
-        <member name="P:BPUtil.SimpleHttp.SimpleThreadPool.CurrentLiveThreads">
-            <summary>
-            Gets the number of threads that are currently available, including those which are busy and those which are idle.
-            </summary>
-        </member>
-        <member name="P:BPUtil.SimpleHttp.SimpleThreadPool.CurrentBusyThreads">
-            <summary>
-            Gets the number of threads that are currently busy processing actions.
-            </summary>
-        </member>
-        <member name="P:BPUtil.SimpleHttp.SimpleThreadPool.MaxThreads">
-            <summary>
-            Gets or sets the soft maximum number of threads this pool should have active at any given time.  It is possible for there to be temporarily more threads than this if certain race conditions are met.  If reducing the value, it may take some time for the number of threads to fall into line, as no special effort is taken to reduce the live thread count quickly.
-            </summary>
-        </member>
-        <member name="P:BPUtil.SimpleHttp.SimpleThreadPool.MinThreads">
-            <summary>
-            Gets or sets the minimum number of threads this pool should have active at any given time.  If increasing the value, it may take some time for the number of threads to rise, as no special effort is taken to reach this number.
-            </summary>
-        </member>
-        <member name="M:BPUtil.SimpleHttp.SimpleThreadPool.#ctor(System.String,System.Int32,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            
-            </summary>
-            <param name="poolName"></param>
-            <param name="minThreads">The minimum number of threads that should be kept alive at all times.</param>
-            <param name="maxThreads">The largest number of threads this pool should attempt to have alive at any given time.  It is possible for there to be temporarily more threads than this if certain race conditions are met.</param>
-            <param name="threadTimeoutMilliseconds"></param>
-            <param name="useBackgroundThreads">If true, the application will be able to exit without waiting for this thread pool.  Background threads do not prevent a process from terminating. Once all foreground threads belonging to a process have terminated, the common language runtime ends the process. Any remaining background threads are stopped and do not complete.</param>
-        </member>
-        <member name="M:BPUtil.SimpleHttp.SimpleThreadPool.SpawnNewActiveThreads(System.Int32)">
-            <summary>
-            Creates new threads and signal them to begin working.
-            </summary>
+            <param name="extensionIncludingDot"></param>
             <returns></returns>
         </member>
-        <member name="M:BPUtil.SimpleHttp.SimpleThreadPool.SpawnNewIdleThreads(System.Int32)">
+        <member name="T:BPUtil.SimpleHttp.HttpCompressionBody">
             <summary>
-            Creates new thread but does not signal them. Instead, the threads are added to the pool of idle threads.
+            A class which compresses or does not compress a content body, depending on its type and length.
             </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpCompressionBody.body">
+            <summary>
+            The http response body, which may be compressed with gzip or not; check ContentEncoding to find out.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpCompressionBody.ContentEncoding">
+            <summary>
+            "" or "gzip" depending on whether or not the body was encoded or not.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpCompressionBody.additionalHeaders">
+            <summary>
+            An additionalHeaders instance that may have had ["Content-Encoding", "gzip"] added to it.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.NetworkAddressInfo.localIPv4Addresses">
+            <summary>
+            A list of IPv4 addresses belonging to this server.  Each item in this list has a corresponding item in the `localIPv4Masks` list at the same index.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.NetworkAddressInfo.localIPv4Masks">
+            <summary>
+            A list of IPv4 subnet masks belonging to this server.  Each item in this list has a corresponding item in the `localIPv4Addresses` list at the same index.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.NetworkAddressInfo.localIPv6Addresses">
+            <summary>
+            A list of IPv6 addresses belonging to this server.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.NetworkAddressInfo.AddV4AddressMono(System.Net.NetworkInformation.UnicastIPAddressInformation)">
+            <summary>
+            Works around a method that was not implemented in some mono versions.
+            </summary>
+            <param name="addressInfo"></param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.NetworkAddressInfo.IsSameMachine(System.Net.IPAddress)">
+            <summary>
+            Returns true if the specified address is the same as any of this server's addresses.
+            </summary>
+            <param name="address"></param>
             <returns></returns>
         </member>
-        <member name="M:BPUtil.SimpleHttp.SimpleThreadPool.Stop">
+        <member name="M:BPUtil.SimpleHttp.NetworkAddressInfo.IsSameLAN(System.Net.IPAddress)">
             <summary>
-            Aborts all idle threads, prevents the creation of new threads, and prevents new actions from being enqueued.  This cannot be undone.
+            Returns true if the specified address is in the same subnet as any of this server's addresses.  For IPv6, this simply returns [address].IsIPv6LinkLocal.
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.NetworkAddressInfo.IsSameLAN(System.Byte[])">
+            <summary>
+            Returns true if the specified IPv4 address is in the same subnet as any of this server's IPv4 addresses.
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BPUtil.SimpleHttp.ProxyDataBuffer">
+            <summary>
+            Contains a list of ProxyDataItems in the order that they were proxied.
+            </summary>
+        </member>
+        <member name="T:BPUtil.SimpleHttp.ProxyDataItem">
+            <summary>
+            Represents a chunk of data that was proxied to or from a remote server.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.ProxyDataItem.Direction">
+            <summary>
+            The direction that this ProxyDataItem was traveling.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.ProxyDataItem.PayloadBytes">
+            <summary>
+            The payload of this ProxyDataItem as a byte array.  If this payload was sourced as a string, it will be converted to a byte array each time you access this property.  The string encoding is treated as UTF8 without a byte order mark.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.ProxyDataItem.PayloadAsString">
+            <summary>
+            The payload of this ProxyDataItem as a string.  If this payload was sourced as a byte array, it will be converted to a string each time you access this property.  The string encoding is treated as UTF8 without a byte order mark.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.ProxyDataItem.#ctor(BPUtil.SimpleHttp.ProxyDataDirection,System.Byte[])">
+            <summary>
+            Creates a ProxyDataItem with a byte array payload.
+            </summary>
+            <param name="direction"></param>
+            <param name="payload"></param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.ProxyDataItem.#ctor(BPUtil.SimpleHttp.ProxyDataDirection,System.String)">
+            <summary>
+            Creates a ProxyDataItem with a string payload.
+            </summary>
+            <param name="direction"></param>
+            <param name="payload"></param>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.ProxyDataDirection.RequestToServer">
+            <summary>
+            RequestToServer indicates that the Payload is part of the data sent to the server.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.ProxyDataDirection.ResponseFromServer">
+            <summary>
+            ResponseFromServer indicates that the Payload is part of a response from the server.
             </summary>
         </member>
         <member name="T:BPUtil.SimpleHttp.GlobalThrottledStream">
             <summary>
             A stream that throttles read and write operations.  The throttled speed varies depending on the number of other competing streams, in order to meet application-wide speed limits.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.GlobalThrottledStream.BaseStream">
+            <summary>
+            Gets a reference to the underlying stream.
             </summary>
         </member>
         <member name="M:BPUtil.SimpleHttp.GlobalThrottledStream.#ctor(System.IO.Stream,System.Int32,System.UInt32)">
@@ -341,14 +1120,22 @@
             The HttpServer instance that accepted this request.
             </summary>
         </member>
-        <member name="F:BPUtil.SimpleHttp.HttpProcessor.outputStream">
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.tcpStream">
             <summary>
-            Be careful to flush each output stream before using a different one!!
+            This stream is for reading and writing binary data.
             
-            This stream is for writing text data.
+            Be careful to flush [tcpStream] or [outputStream] before switching between them!!
+            
+            This stream is typically either a NetworkStream or a GzipStream.
             </summary>
         </member>
-        <member name="F:BPUtil.SimpleHttp.HttpProcessor.rawOutputStream">
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor.outputStream">
+            <summary>
+            This stream is for writing text data.
+            Be careful to flush [tcpStream] or [outputStream] before switching between them!!
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpProcessor.rawOutputStream">
             <summary>
             Be careful to flush each output stream before using a different one!!
             
@@ -439,17 +1226,37 @@
         </member>
         <member name="P:BPUtil.SimpleHttp.HttpProcessor.IsLanConnection">
             <summary>
-            Returns true if the remote client's ipv4 address is in the same class C range as any of the server's ipv4 addresses.
+            Returns true if the remote client's IP address is in the same subnet as any of the server's IP addresses.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpProcessor.IsLocalConnection">
+            <summary>
+            Returns true if the remote client's IP address is an exact match with any of the server's IP addresses.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpProcessor.RemoteIPAddressStr">
+            <summary>
+            Returns the remote client's IP address as a string, or null if the remote IP address is somehow not available.
             </summary>
         </member>
         <member name="P:BPUtil.SimpleHttp.HttpProcessor.RemoteIPAddress">
             <summary>
-            Returns the remote client's IP address, or an empty string if the remote IP address is somehow not available.
+            Returns the remote client's IP address, or null if the remote IP address is somehow not available.
             </summary>
         </member>
         <member name="P:BPUtil.SimpleHttp.HttpProcessor.RemoteIPAddressInt">
             <summary>
             Returns the remote client's IPv4 address as a 32 bit unsigned integer.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleHttp.HttpProcessor.compressionType">
+            <summary>
+            The type of compression that will be used for the response stream.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleHttp.HttpProcessor._internal_post_body_for_proxy">
+            <summary>
+            This is a reference to the MemoryStream containing the post body, for internal use only by the ProxyTo method.
             </summary>
         </member>
         <member name="M:BPUtil.SimpleHttp.HttpProcessor.process">
@@ -467,6 +1274,13 @@
             Parses the http headers
             </summary>
         </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.AddOrUpdateHeaderValue(System.String,System.String)">
+            <summary>
+            Adds or updates the header with the specified value.  If the header already has a value in our map(s), a comma will be appended, then the new value will be appended.
+            </summary>
+            <param name="headerName"></param>
+            <param name="value"></param>
+        </member>
         <member name="M:BPUtil.SimpleHttp.HttpProcessor.handleGETRequest">
             <summary>
             Asks the HttpServer to handle this request as a GET request.  If the HttpServer does not write a response code header, this will write a generic failure header.
@@ -481,6 +1295,20 @@
             content length, because otherwise it won't know where the end is!
             
             If the HttpServer does not write a response code header, this will write a generic failure header.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.CompressResponseIfCompatible">
+            <summary>
+            Automatically compresses the response body using gzip encoding, if the client requested it.
+            Must be called BEFORE writeSuccess().
+            Note that the Content-Length header, if provided, should be the COMPRESSED length, so you likely won't know what value to use.  Omit the header instead.
+            Returns true if the response will be compressed, and sets this.compressionType.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.EnableCompressionIfSet">
+            <summary>
+            Called automatically by writeSuccess method; flushes the existing output streams and wraps them in a gzipstream if gzip compression is to be used.
             </summary>
         </member>
         <member name="M:BPUtil.SimpleHttp.HttpProcessor.writeSuccess(System.String,System.Int64,System.String,System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
@@ -509,6 +1337,7 @@
             <summary>
             Writes response headers to finish the WebSocket handshake with the client. No extensions are supported (such as compression) at this time.
             This method is supposed to facilitate linking two WebSocket clients together using this server as a proxy.
+            NOTE: This functionality is untested and likely does not work as intended.
             </summary>
         </member>
         <member name="M:BPUtil.SimpleHttp.HttpProcessor.GetHeaderValue(System.String,System.String)">
@@ -518,6 +1347,16 @@
             <param name="name">The case insensitive name of the header to get the value of.</param>
             <param name="defaultValue">The default value to return, in case the value did not exist.</param>
             <returns>The value of the header, or null if the header did not exist.</returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpProcessor.ProxyTo(System.String,System.Int32,System.Boolean,BPUtil.SimpleHttp.ProxyDataBuffer)">
+            <summary>
+            Acts as a proxy server, sending the request to a different URL.  This method starts a new (and unpooled) thread to handle the response from the remote server.
+            The "Host" header is rewritten (or added) and output as the first header.
+            </summary>
+            <param name="newUrl">The URL to proxy the original request to.</param>
+            <param name="networkTimeoutMs">The send and receive timeout to set for both TcpClients, in milliseconds.</param>
+            <param name="acceptAnyCert">If true, certificate validation will be disabled for outgoing https connections.</param>
+            <param name="snoopy">If non-null, proxied communication will be copied into this object so you can snoop on it.</param>
         </member>
         <member name="M:BPUtil.SimpleHttp.HttpProcessor.ParseQueryStringArguments(System.String,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
@@ -669,6 +1508,24 @@
             The actual port the http server is listening on.  Will be -1 if not listening.
             </summary>
         </member>
+        <member name="E:BPUtil.SimpleHttp.HttpServer.SocketBound">
+            <summary>
+            Raised when a listening socket is bound to a port.  The Event Handler passes along a string which can be printed to the console, announcing this event.
+            </summary>
+        </member>
+        <member name="E:BPUtil.SimpleHttp.HttpServer.CertificateExpirationWarning">
+            <summary>
+            Raised when an SSL connection is made using a certificate that will expire within the next 14 days.  This event will not be raised more than once in a 60 minute period (assuming the same HttpServer instance is used).
+            The TimeSpan argument indicates the time to expiration, which may be less than or equal to TimeSpan.Zero if the certificate is expired.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.GetAddressInfo">
+            <summary>
+            Gets information about the current network interfaces.
+            You should work with a local reference to the returned object, because this method is not guaranteed to always return the same instance.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:BPUtil.SimpleHttp.HttpServer.#ctor(System.Int32,System.Int32,System.Security.Cryptography.X509Certificates.X509Certificate2)">
             <summary>
             
@@ -676,6 +1533,24 @@
             <param name="port">The port number on which to accept regular http connections. If -1, the server will not listen for http connections.</param>
             <param name="httpsPort">(Optional) The port number on which to accept https connections. If -1, the server will not listen for https connections.</param>
             <param name="cert">(Optional) Certificate to use for https connections.  If null and an httpsPort was specified, a certificate is automatically created if necessary and loaded from "SimpleHttpServer-SslCert.pfx" in the same directory that the current executable is located in.</param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.SetCertificate(System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            Sets a new SSL certificate to be used for all future connections;
+            </summary>
+            <param name="newCertificate"></param>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.GetCertificateExpiration">
+            <summary>
+            Returns the date in local time after which the certificate is no longer valid.  If the certificate is null, returns DateTime.MaxValue.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleHttp.HttpServer.GetCertificateFriendlyName">
+            <summary>
+            Returns the date in local time after which the certificate is no longer valid.  If the certificate is null, returns DateTime.MaxValue.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:BPUtil.SimpleHttp.HttpServer.listen(System.Object)">
             <summary>
@@ -814,6 +1689,110 @@
             <param name="time">The time of the request, from which the log file name will be chosen.</param>
             <param name="line">The string to log, including a timestamp and all information desired. This string should not contain line breaks.</param>
         </member>
+        <member name="F:BPUtil.SimpleThreadPool.idleThreads">
+            <summary>
+            A stack of threads that are idle.
+            </summary>
+        </member>
+        <member name="F:BPUtil.SimpleThreadPool.actionQueue">
+            <summary>
+            A queue of actions to be performed by threads.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleThreadPool.CurrentLiveThreads">
+            <summary>
+            Gets the number of threads that are currently available, including those which are busy and those which are idle.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleThreadPool.CurrentBusyThreads">
+            <summary>
+            Gets the number of threads that are currently busy processing actions.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleThreadPool.MaxThreads">
+            <summary>
+            Gets or sets the soft maximum number of threads this pool should have active at any given time.  It is possible for there to be temporarily more threads than this if certain race conditions are met.  If reducing the value, it may take some time for the number of threads to fall into line, as no special effort is taken to reduce the live thread count quickly.
+            </summary>
+        </member>
+        <member name="P:BPUtil.SimpleThreadPool.MinThreads">
+            <summary>
+            Gets or sets the minimum number of threads this pool should have active at any given time.  If increasing the value, it may take some time for the number of threads to rise, as no special effort is taken to reach this number.
+            </summary>
+        </member>
+        <member name="M:BPUtil.SimpleThreadPool.#ctor(System.String,System.Int32,System.Int32,System.Int32,System.Boolean,System.Action{System.Exception,System.String})">
+            <summary>
+            
+            </summary>
+            <param name="poolName"></param>
+            <param name="minThreads">The minimum number of threads that should be kept alive at all times.</param>
+            <param name="maxThreads">The largest number of threads this pool should attempt to have alive at any given time.  It is possible for there to be temporarily more threads than this if certain race conditions are met.</param>
+            <param name="threadTimeoutMilliseconds"></param>
+            <param name="useBackgroundThreads">If true, the application will be able to exit without waiting for this thread pool.  Background threads do not prevent a process from terminating. Once all foreground threads belonging to a process have terminated, the common language runtime ends the process. Any remaining background threads are stopped and do not complete.</param>
+            <param name="logErrorAction">A method to use for logging exceptions.  If null, SimpleHttpLogger.Log will be used.</param>
+        </member>
+        <member name="M:BPUtil.SimpleThreadPool.SpawnNewActiveThreads(System.Int32)">
+            <summary>
+            Creates new threads and signal them to begin working.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleThreadPool.SpawnNewIdleThreads(System.Int32)">
+            <summary>
+            Creates new thread but does not signal them. Instead, the threads are added to the pool of idle threads.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.SimpleThreadPool.Stop">
+            <summary>
+            Aborts all idle threads, prevents the creation of new threads, and prevents new actions from being enqueued.  This cannot be undone.
+            </summary>
+        </member>
+        <member name="T:BPUtil.StaticRandom">
+            <summary>
+            This class keeps an internal thread-local Random instance, making it thread-safe. Each thread's Random instance uses a different seed.
+            </summary>
+        </member>
+        <member name="M:BPUtil.StaticRandom.Next">
+            <summary>
+            Returns a nonnegative random number.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.StaticRandom.Next(System.Int32)">
+            <summary>
+            Returns a random number in the range [0, maxValue)
+            </summary>
+            <param name="maxValue">Exclusive maximum value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.StaticRandom.Next(System.Int32,System.Int32)">
+            <summary>
+            Returns a random number in the range [minvalue, maxValue)
+            </summary>
+            <param name="minValue">Inclusive minimum value.</param>
+            <param name="maxValue">Exclusive maximum value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.TimeUtil.DateTimeFromEpochMS(System.Int64)">
+            <summary>
+            Returns a DateTime object based on the specified number of milliseconds since the Unix Epoch (1970/1/1 midnight UTC).  The returned object uses the UTC timezone.
+            </summary>
+            <param name="ms_since_epoch">The number of milliseconds since the Unix Epoch (1970/1/1 midnight UTC).</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.TimeUtil.GetTimeInMsSinceEpoch">
+            <summary>
+            Returns the number of milliseconds since the Unix Epoch (1970/1/1 midnight UTC), calculated against the current time (UTC).
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.TimeUtil.GetTimeInMsSinceEpoch(System.DateTime)">
+            <summary>
+            Returns the number of milliseconds since the Unix Epoch (1970/1/1 midnight UTC) until the specified date.
+            </summary>
+            <param name="date">The date to calculate milliseconds for.</param>
+            <returns>The number of milliseconds since the Unix Epoch (1970/1/1 midnight UTC).</returns>
+        </member>
         <member name="T:BPUtil.Try">
             <summary>
             Contains static methods to execute code with simple predefined exception handlers.
@@ -824,6 +1803,12 @@
             Runs the specified Action inside a try block and swallows all exceptions.
             </summary>
             <param name="actionToTry"></param>
+        </member>
+        <member name="M:BPUtil.Try.Swallow``1(System.Func{``0})">
+            <summary>
+            Runs the specified Func inside a try block and swallows all exceptions.  Returns default(T) in the event of an exception, otherwise whatever the Func returned.
+            </summary>
+            <param name="funcToTry"></param>
         </member>
         <member name="M:BPUtil.Try.SwallowBool(System.Func{System.Boolean})">
             <summary>
@@ -837,6 +1822,12 @@
             </summary>
             <param name="actionToTry"></param>
         </member>
+        <member name="M:BPUtil.Try.Catch``1(System.Func{``0})">
+            <summary>
+            Runs the specified Func inside a try block and logs all exceptions.  Returns default(T) in the event of an exception, otherwise whatever the Func returned.
+            </summary>
+            <param name="funcToTry"></param>
+        </member>
         <member name="M:BPUtil.Try.Catch_RethrowThreadAbort(System.Action)">
             <summary>
             Runs the specified Action inside a try block and logs all exceptions except ThreadAbortException, which is rethrown.
@@ -849,6 +1840,48 @@
             </summary>
             <param name="funcBoolToTry"></param>
         </member>
+        <member name="T:BPUtil.UdpPacket">
+            <summary>
+            A packet which has been received by UDP.
+            </summary>
+        </member>
+        <member name="T:BPUtil.UdpBroadcaster">
+            <summary>
+            A class which sends and optionally receives UDP broadcast packets on a particular port.
+            </summary>
+        </member>
+        <member name="E:BPUtil.UdpBroadcaster.PacketReceived">
+            <summary>
+            Raised when a UDP packet is received.
+            </summary>
+        </member>
+        <member name="M:BPUtil.UdpBroadcaster.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Constructs a UdpBroadcaster instance that uses the default network interface (ideal for systems that have a single network adapter).
+            </summary>
+            <param name="port">The port number to send and receive on. This class will attempt to share the port with other processes instead of claiming exclusive use.</param>
+            <param name="listen">If true, the UdpBroadcaster will listen for incoming packets on the port.  There is no way to distinguish between a broadcast packet and a packet targeted for this machine specifically, so both kinds of packets will be received.  The PacketReceived event will be raised with each received packet.</param>
+        </member>
+        <member name="M:BPUtil.UdpBroadcaster.#ctor(System.Net.IPAddress,System.Net.IPAddress,System.Int32,System.Boolean)">
+            <summary>
+            Constructs a UdpBroadcaster instance to send and listen on specific addresses.
+            </summary>
+            <param name="broadcastAddress">The address to broadcast to.</param>
+            <param name="listenAddress">The address to listen on.</param>
+            <param name="port">The port number to send and receive on. This class will attempt to share the port with other processes instead of claiming exclusive use.</param>
+            <param name="listen">If true, the UdpBroadcaster will listen for incoming packets on the port.  There is no way to distinguish between a broadcast packet and a packet targeted for this machine specifically, so both kinds of packets will be received.  The PacketReceived event will be raised with each received packet.</param>
+        </member>
+        <member name="M:BPUtil.UdpBroadcaster.Stop">
+            <summary>
+            Ends the send and receive threads.
+            </summary>
+        </member>
+        <member name="M:BPUtil.UdpBroadcaster.Broadcast(System.Byte[])">
+            <summary>
+            Broadcasts the specified packet.
+            </summary>
+            <param name="packet"></param>
+        </member>
         <member name="F:BPUtil.WaitProgressivelyLonger.sleepTimeCutoff">
             <summary>
             sleepTime will not increase if it is greater than this value.
@@ -859,12 +1892,111 @@
             sleepTime increases by this much each time Wait is called.
             </summary>
         </member>
-        <member name="M:BPUtil.WaitProgressivelyLonger.#ctor(System.Int32,System.Double)">
+        <member name="M:BPUtil.WaitProgressivelyLonger.#ctor(System.Int32,System.Double,System.Double)">
             <summary>
             
             </summary>
-            <param name="maxSleepTimeMs">The waiting time will not increase past this value</param>
+            <param name="maxSleepTimeMs">The waiting time will not increase beyond this value.</param>
             <param name="sleepTimeModifierMs">The waiting time will increase by this much each time Wait() is called.</param>
+            <param name="startSleepTimeMs">The time to sleep the first time Wait() is called.</param>
+        </member>
+        <member name="T:BPUtil.BpWebResponse">
+            <summary>
+            Contains HTTP response data.  This is returned by GET and POST methods in <see cref="T:BPUtil.WebRequestUtility"/>.
+            </summary>
+        </member>
+        <member name="F:BPUtil.BpWebResponse.data">
+            <summary>
+            The raw response payload as a byte array.
+            </summary>
+        </member>
+        <member name="F:BPUtil.BpWebResponse.headers">
+            <summary>
+            A collection of http response headers.  Keys are case sensitive.
+            </summary>
+        </member>
+        <member name="F:BPUtil.BpWebResponse.ContentType">
+            <summary>
+            The value of the Content Type response header.
+            </summary>
+        </member>
+        <member name="F:BPUtil.BpWebResponse.StatusCode">
+            <summary>
+            The HTTP status code of the response.  200 is normal success, 404 is Not Found, and so on.
+            </summary>
+        </member>
+        <member name="F:BPUtil.BpWebResponse._str">
+            <summary>
+            A cache for the string value of the response.  This is populated the first time [str] is requested.
+            </summary>
+        </member>
+        <member name="F:BPUtil.BpWebResponse.remoteIp">
+            <summary>
+            The remote IP address of the server, in case a DNS hostname was used in the URL.
+            </summary>
+        </member>
+        <member name="P:BPUtil.BpWebResponse.str">
+            <summary>
+            Returns the response in string format.
+            </summary>
+            <remarks>The response is assumed to be UTF8-formatted string data.</remarks>
+        </member>
+        <member name="T:BPUtil.WebRequestUtility">
+            <summary>
+            Provides HTTP GET and POST methods which are useful in situations where the WebClient class falls short.
+            </summary>
+        </member>
+        <member name="F:BPUtil.WebRequestUtility.requestTimeout">
+            <summary>
+            Time in milliseconds to wait for web responses.
+            </summary>
+        </member>
+        <member name="F:BPUtil.WebRequestUtility.BasicAuthCredentials">
+            <summary>
+            If provided, all web requests will attempt basic authentication using these credentials.
+            </summary>
+        </member>
+        <member name="M:BPUtil.WebRequestUtility.GET(System.String,System.String[],System.Int32)">
+            <summary>
+            Performs an HTTP GET request.
+            </summary>
+            <param name="url">The url to GET.</param>
+            <param name="headers"><para>An array of strings containing header names and values. The array should be populated in the order of "name", "value", "name", "value", and so on.</para>
+            <para>
+            For example:
+            </para>
+            <code>new string[] { "HeaderNameOne", "Header Value One!", "HeaderNameTwo", "Header Value Two!", "User-Agent", "Mozilla" }</code></param>
+            <param name="earlyTerminationBytes">(Advanced use) If specified, the connection will be dropped as soon as this many bytes are read, and this much data will be returned. If the full response is shorter than this, then the full response will be returned.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.WebRequestUtility.POST(System.String,System.String[],System.String[],System.Int32)">
+            <summary>
+            Performs an HTTP POST request, sending key and value strings to the server using the content type "application/x-www-form-urlencoded".
+            </summary>
+            <param name="url">The url to POST.</param>
+            <param name="keysAndValues">An array of strings containing parameter names and values. The array should be populated in the order of "name", "value", "name", "value", and so on.
+            <para>
+            For example:
+            </para>
+            <code>new string[] { "ParamOne", "Value One!", "ParamTwo", "Value Two!" }</code></param>
+            <param name="headers">An array of strings containing header names and values. The array should be populated in the order of "name", "value", "name", "value", and so on.
+            <para>
+            For example:
+            </para>
+            <code>new string[] { "HeaderNameOne", "Header Value One!", "HeaderNameTwo", "Header Value Two!", "User-Agent", "Mozilla" }</code></param>
+            <param name="earlyTerminationBytes">If specified, the connection will be dropped as soon as this many bytes are read, and this much data will be returned. If the full response is shorter than this, then the full response will be returned.</param>
+            <returns></returns>
+        </member>
+        <member name="M:BPUtil.WebRequestUtility.POST(System.String,System.Byte[],System.String,System.String[],System.Int32)">
+             <summary>
+             Performs an HTTP POST request, sending the specified body content.
+             </summary>
+             <param name="url">The url to POST.</param>
+             <param name="postBody">The content to post.</param>
+             <param name="earlyTerminationBytes">If specified, the connection will be dropped as soon as this many bytes are read, and this much data will be returned. If the full response is shorter than this, then the full response will be returned.</param>
+            <param name="contentType">The value of the content-type header to set.</param>
+            <param name="headers">Additional header keys and values to set in the request, provided as an array of strings ordered as [key, value, key, value] and so on. e.g.: { "User-Agent", "Mozilla", "Server", "BPUtil" }</param>
+             <returns></returns>
         </member>
     </members>
 </doc>

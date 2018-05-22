@@ -21,6 +21,7 @@ namespace OmxPlayerAuto
 			Logger.logType = LoggingMode.Console | LoggingMode.File;
 			Globals.Initialize(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			string settingsPath = Globals.WritableDirectoryBase + "OPA_Settings.cfg";
 			Settings settings = new Settings();
 			settings.Load(settingsPath);
@@ -35,6 +36,14 @@ namespace OmxPlayerAuto
 			while (Console.ReadLine().ToLower() != "exit");
 			ws.Stop();
 
+		}
+
+		private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			if (e.ExceptionObject is Exception)
+				Logger.Debug((Exception)e.ExceptionObject);
+			else
+				Logger.Debug(e.ExceptionObject.ToString());
 		}
 	}
 }

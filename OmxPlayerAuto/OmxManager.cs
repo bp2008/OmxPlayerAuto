@@ -13,6 +13,7 @@ namespace OmxPlayerAuto
 {
 	public class OmxManager : IDisposable
 	{
+		public static HourAndMinute[] staticRestartSchedule = null;
 		/// <summary>
 		/// Manager ID number.
 		/// </summary>
@@ -29,7 +30,7 @@ namespace OmxPlayerAuto
 		private Process binProc;
 		private PerformanceCounter cpuReader;
 		private DateTime lastCpuUsageCalcTime = DateTime.UtcNow;
-		private double lastCpuTotalSeconds = 0;
+		//private double lastCpuTotalSeconds = 0;
 		private double cpuUsage = 0;
 		/// <summary>
 		/// The CPU usage of the omxplayer.bin process being managed by this instance.
@@ -68,12 +69,13 @@ namespace OmxPlayerAuto
 		{
 			try
 			{
+				int lastMinute = -1;
 				while (true)
 				{
 					try
 					{
 						RestartProcess();
-						
+
 						const double LowCpuLimit = 0.1; // CPU usage below this threshold indicates the process is idle.
 						const int MaxLowCpuCount = 15; // CPU usage can be below the threshold this many times in a row without consequence.
 						int lowCpuCounter = 0;
@@ -96,8 +98,25 @@ namespace OmxPlayerAuto
 								lowCpuCounter = 0;
 							if (lowCpuCounter > MaxLowCpuCount)
 							{
-								Logger.Info("omxplayer.bin hang detected (" + thrManager.Name + ")");
-								break;
+								if (WebServer.settings.ServerSettings.CpuWatchdog)
+								{
+									Logger.Info("omxplayer.bin hang detected (" + thrManager.Name + ")");
+									break;
+								}
+							}
+							DateTime now = DateTime.Now;
+							if (now.Minute != lastMinute)
+							{
+								lastMinute = now.Minute;
+								var restartSchedule = staticRestartSchedule;
+								if (restartSchedule != null)
+								{
+									bool doRestart = false;
+									foreach (HourAndMinute ham in restartSchedule)
+										doRestart |= (ham.Hour == now.Hour && ham.Minute == now.Minute);
+									if (doRestart)
+										break; // Break, causing process restart, but don't log this because it will happen regularly.
+								}
 							}
 
 							Thread.Sleep(2000);

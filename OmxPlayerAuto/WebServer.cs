@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BPUtil;
 using BPUtil.SimpleHttp;
+using Newtonsoft.Json;
 
 namespace OmxPlayerAuto
 {
@@ -21,13 +22,14 @@ namespace OmxPlayerAuto
 		public const bool isDebug = false;
 #endif
 		Thread omxWatcher;
-		Settings settings;
-		DateTime updateSettingsTime = DateTime.UtcNow;
+		public static Settings settings;
+		DateTime updateCommandsTime = DateTime.UtcNow;
 		string settingsPath = "";
 		List<OmxManager> allOmx = new List<OmxManager>();
 		public WebServer(Settings settings, string settingsPath) : base(settings.WebPort, -1, null)
 		{
-			this.settings = settings;
+			WebServer.settings = settings;
+			OmxManager.staticRestartSchedule = settings.ServerSettings.GetRestartStreamsSchedule();
 			this.settingsPath = settingsPath;
 			if (settings.OmxPlayerCommands == null)
 				settings.OmxPlayerCommands = new List<string>();
@@ -75,29 +77,24 @@ namespace OmxPlayerAuto
 				}
 				return;
 			}
-			else if (p.requestedPage == "getList")
+			else if (p.requestedPage == "getAll")
 			{
-				List<KeyValuePair<string, string>> additionalHeaders = new List<KeyValuePair<string, string>>();
-				additionalHeaders.Add(new KeyValuePair<string, string>("Streamingenabled", settings.StreamingEnabled ? "1" : "0"));
-				p.writeSuccess("text/plain; charset=UTF-8", additionalHeaders: additionalHeaders);
-				p.outputStream.Write(string.Join("\n", settings.OmxPlayerCommands));
-			}
-			else if (p.requestedPage == "setEnabled")
-			{
-				settings.StreamingEnabled = p.GetBoolParam("enable");
-				settings.Save(settingsPath);
-				p.writeSuccess("text/plain; charset=UTF-8");
-			}
-			else if (p.requestedPage == "getEnabled")
-			{
-				p.writeSuccess("text/plain; charset=UTF-8");
-				p.outputStream.Write(settings.StreamingEnabled ? "1" : "0");
+				AllServerData serverData = new AllServerData();
+				serverData.OmxPlayerCommands = string.Join("\n", settings.OmxPlayerCommands);
+				serverData.Settings = settings.ServerSettings;
+				p.writeSuccess("application/json");
+				p.outputStream.Write(JsonConvert.SerializeObject(serverData));
 			}
 			else if (p.requestedPage == "getStatus")
 			{
 				p.writeSuccess("text/plain; charset=UTF-8");
 				p.outputStream.Write(GetOmxStatus());
 			}
+		}
+		public class AllServerData
+		{
+			public string OmxPlayerCommands;
+			public ServerSettings Settings;
 		}
 
 		private string GetOmxStatus()
@@ -124,13 +121,23 @@ namespace OmxPlayerAuto
 				string newList = p.GetPostParam("newlist");
 				settings.OmxPlayerCommands = new List<string>(newList.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
 				settings.Save(settingsPath);
-				updateSettingsTime = DateTime.UtcNow;
+				updateCommandsTime = DateTime.UtcNow;
 				Logger.Info("Assigned settings.OmxPlayerCommands " + settings.OmxPlayerCommands.Count + " items");
+				p.writeSuccess("text/plain; charset=UTF-8");
+			}
+			else if (p.requestedPage == "setSettings")
+			{
+				string json = inputData.ReadToEnd();
+				settings.ServerSettings = JsonConvert.DeserializeObject<ServerSettings>(json);
+				settings.Save(settingsPath);
+				OmxManager.staticRestartSchedule = settings.ServerSettings.GetRestartStreamsSchedule();
 				p.writeSuccess("text/plain; charset=UTF-8");
 			}
 		}
 		public void omxWatcherLoop()
 		{
+			if (Environment.OSVersion.Platform != PlatformID.Unix)
+				return;
 			try
 			{
 				while (true)
@@ -138,7 +145,7 @@ namespace OmxPlayerAuto
 					try
 					{
 						KillAllOmxPlayers();
-						if (settings.StreamingEnabled)
+						if (settings.ServerSettings.StreamingEnabled)
 						{
 							DateTime lastTime = DateTime.UtcNow;
 							List<string> cmds = settings.OmxPlayerCommands;
@@ -156,7 +163,7 @@ namespace OmxPlayerAuto
 									allOmx.Add(new OmxManager(allOmx.Count, cmd));
 							}
 
-							while (settings.StreamingEnabled && lastTime >= updateSettingsTime)
+							while (settings.ServerSettings.StreamingEnabled && lastTime >= updateCommandsTime)
 								Thread.Sleep(1000);
 						}
 						else

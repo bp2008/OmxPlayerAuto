@@ -18,57 +18,26 @@
 	</script>
 	<script src="jquery-3.1.1.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
-		var allSelectors = "#txt,input";
+		var allSelectors = "textarea,input";
+		var lastSettings = new Object();
 		$(function ()
 		{
-			$.ajax({ url: "getList" })
+			PrepareDOMInputEvents();
+			$(allSelectors).attr("disabled", "disabled");
+			$.ajax({ url: "getAll", dataType: "json" })
 				.done(function (response, textStatus, jqXHR)
 				{
-					$("#txt").val(response);
-					if (jqXHR.getResponseHeader("Streamingenabled") == "1")
-						$("#streamingEnabledCb").prop("checked", "checked");
-					else
-						$("#streamingEnabledCb").removeProp("checked");
+					$("#txt").val(response.OmxPlayerCommands);
+					lastSettings = response.Settings;
+					SetSettingsInDOM();
 					$(allSelectors).removeAttr("disabled");
 				})
-				.fail(function (jqxhr, settings, exception)
+				.fail(function (jqXHR, textStatus, errorThrown)
 				{
 					alert("Unable to get settings.");
 				});
 			UpdateStatus();
 		});
-		function SetNewList()
-		{
-			$(allSelectors).attr("disabled", "disabled");
-			$.ajax({ url: "setNewList", method: "POST", data: { newlist: $("#txt").val() } })
-				.done(function (response)
-				{
-					$(allSelectors).removeAttr("disabled");
-				})
-				.fail(function (jqxhr, settings, exception)
-				{
-					alert("Unable to save.");
-					$(allSelectors).removeAttr("disabled");
-				});
-		}
-		function StreamingEnabledChanged()
-		{
-			$(allSelectors).attr("disabled", "disabled");
-			$.ajax({ url: "setEnabled?enable=" + ($("#streamingEnabledCb").is(":checked") ? "1" : "0") })
-				.done(function (response)
-				{
-					$(allSelectors).removeAttr("disabled");
-				})
-				.fail(function (jqxhr, settings, exception)
-				{
-					alert("Unable to toggle Streaming Enabled checkbox on server.");
-					if ($("#streamingEnabledCb").is(":checked"))
-						$("#streamingEnabledCb").removeProp("checked");
-					else
-						$("#streamingEnabledCb").prop("checked", "checked");
-					$(allSelectors).removeAttr("disabled");
-				});
-		}
 		function UpdateStatus()
 		{
 			$.ajax({ url: "getStatus" })
@@ -77,11 +46,90 @@
 					$("#status").css("color", "#000000").text(response);
 					setTimeout(UpdateStatus, 1000);
 				})
-				.fail(function (jqxhr, settings, exception)
+				.fail(function (jqXHR, textStatus, errorThrown)
 				{
 					$("#status").css("color", "#FF0000");
 					setTimeout(UpdateStatus, 1000);
 				});
+		}
+		function SetNewList()
+		{
+			$(allSelectors).attr("disabled", "disabled");
+			$.ajax({ url: "setNewList", method: "POST", data: { newlist: $("#txt").val() } })
+				.done(function (response)
+				{
+					$(allSelectors).removeAttr("disabled");
+				})
+				.fail(function (jqXHR, textStatus, errorThrown)
+				{
+					alert("Unable to save.");
+					$(allSelectors).removeAttr("disabled");
+				});
+		}
+		function SaveSettings()
+		{
+			GetSettingsFromDOM();
+			$(allSelectors).attr("disabled", "disabled");
+			$("#message").text("Saving settings...");
+			$.ajax({ url: "setSettings", type: "POST", contentType: "application/json", data: JSON.stringify(lastSettings) })
+				.done(function (response)
+				{
+					$(allSelectors).removeAttr("disabled");
+					$("#message").text("");
+				})
+				.fail(function (jqXHR, textStatus, errorThrown)
+				{
+					alert("Unable to set settings on server.");
+					$(allSelectors).removeAttr("disabled");
+					$("#message").text("Saving settings failed!");
+				});
+		}
+		function PrepareDOMInputEvents()
+		{
+			$('[settingName]').each(function (idx, ele)
+			{
+				var $ele = $(ele);
+				var tagName = $ele.prop('tagName').toLowerCase();
+				var type = $ele.attr('type');
+				if (tagName === "input" && type === "checkbox")
+					$ele.on('change', SaveSettings);
+				else if (tagName === "input" && type === "text")
+					$ele.on('change', SaveSettings);
+			});
+		}
+		function SetSettingsInDOM()
+		{
+			$('[settingName]').each(function (idx, ele)
+			{
+				var $ele = $(ele);
+				var settingName = $ele.attr('settingName');
+				var tagName = $ele.prop('tagName').toLowerCase();
+				var type = $ele.attr('type');
+				if (tagName === "input" && type === "checkbox")
+				{
+					if (lastSettings[settingName])
+						$ele.attr("checked", "checked");
+					else
+						$ele.removeAttr("checked");
+				}
+				else if (tagName === "input" && type === "text")
+					$ele.val(lastSettings[settingName]);
+			});
+		}
+		function GetSettingsFromDOM()
+		{
+			$('[settingName]').each(function (idx, ele)
+			{
+				var $ele = $(ele);
+				var settingName = $ele.attr('settingName');
+				var tagName = $ele.prop('tagName').toLowerCase();
+				var type = $ele.attr('type');
+				if (tagName === "input" && type === "checkbox")
+					lastSettings[settingName] = $ele.is(":checked");
+				else if (tagName === "input" && type === "text")
+					lastSettings[settingName] = $ele.val();
+			});
+			return lastSettings;
 		}
 		function htmlEncode(value)
 		{
@@ -123,13 +171,32 @@
 		{
 			white-space: pre-wrap;
 		}
+		.settingsRow
+		{
+			margin: 10px 0px;
+		}
+		.settingsComment
+		{
+			font-style: italic;
+			color: #006600;
+		}
 	</style>
 </head>
 <body>
 	<div id="root">
-		<div><textarea id="txt" rows="20" disabled="disabled" wrap="off">Loading...</textarea></div>
-		<div><input type="button" onclick="SetNewList()" value="Save" disabled="disabled" /></div>
-		<div><label><input type="checkbox" id="streamingEnabledCb" onclick="StreamingEnabledChanged()" disabled="disabled" />Streaming Enabled</label></div>
+		<div><textarea id="txt" rows="20" wrap="off">Loading...</textarea></div>
+		<div><input type="button" onclick="SetNewList()" value="Save Stream List" /></div>
+		<div>All settings below save immediately when modified:</div>
+		<div class="settingsRow">
+			<label><input type="checkbox" settingName="StreamingEnabled" />Streaming Enabled</label>
+		</div>
+		<div class="settingsRow">
+			<label><input type="checkbox" settingName="StreamingEnabled" />Cpu Watchdog</label>
+			<div class="settingsComment">Restart stream if its omxplayer process has no measurable CPU usage for a while.</div>
+		</div>
+		<div class="settingsRow">
+			<label><input type="text" settingName="RestartStreamsSchedule" /> Restart Streams Schedule</label><div class="settingsComment">Enter integers indicating daily times at which to restart all streams. Separate multiple values with spaces. Example: "600 1800 2154"" to have streams restart at 6:00 AM, 6:00 PM, and 9:54 PM. Out-of-range values like 660, 2400, 5000, etc will be ignored.</div>
+		</div>
 		<div id="message"></div>
 		<div id="status"></div>
 	</div>
