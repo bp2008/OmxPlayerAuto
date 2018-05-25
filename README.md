@@ -55,7 +55,7 @@ mono OmxPlayerAuto.exe
 [Desktop Entry]
 Type=Application
 Name=OmxPlayerAuto
-Exec=lxterminal --command "sudo /home/pi/omxplayerauto/start.sh"
+Exec=lxterminal --command="sudo /home/pi/omxplayerauto/start.sh" --title="OmxPlayerAuto"
 Terminal=false
 ```
 Close and save the file.
