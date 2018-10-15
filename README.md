@@ -11,6 +11,8 @@ You need the mono runtime to be installed. You can install it by opening a termi
 ```
 sudo apt-get install mono-complete
 ```
+Alternatively follow instructions here to get a newer version of mono-complete: http://www.mono-project.com/download/stable/#download-lin-raspbian
+
 ### Installation
 
 1) Create a new folder to contain the program files. e.g. "/home/pi/omxplayerauto"
