@@ -58,7 +58,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="Settings.cs" />
-    <None Include="Install.sh" />
+    <None Include="OmxPlayerAuto_Install.sh" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
