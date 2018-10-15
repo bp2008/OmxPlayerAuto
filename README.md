@@ -7,6 +7,16 @@ A .net/mono project designed for Raspberry Pi which enables basic remote managem
 
 I recommend you use a recent version of the Raspbian operating system, and have it configured to boot directly to the desktop without requiring authentication.
 
+### Installation Script
+
+Run these commands on your pi:
+
+```
+wget https://raw.githubusercontent.com/bp2008/OmxPlayerAuto/master/OmxPlayerAuto/OmxPlayerAuto_Install.sh
+chmod u+x OmxPlayerAuto_Install.sh
+./OmxPlayerAuto_Install.sh
+```
+
 You need the mono runtime to be installed. You can install it by opening a terminal window and entering the following command:
 ```
 sudo apt-get install mono-complete
