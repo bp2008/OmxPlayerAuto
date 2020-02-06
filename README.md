@@ -18,3 +18,7 @@ chmod u+x OmxPlayerAuto_Install.sh
 ```
 
 The installation script will ask if you wish to install or uninstall.  Once installed, OmxPlayerAuto will start automatically upon booting to the desktop.
+
+### Configuration
+
+Access the configuration interface at `http://raspberry-pi-ip/` *<-- insert your pi's IP address*
