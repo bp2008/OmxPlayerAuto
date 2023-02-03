@@ -18,19 +18,23 @@ namespace OmxPlayerAuto
 		/// Manager ID number.
 		/// </summary>
 		public readonly int id;
-		public readonly string cmd;
+		public readonly string executableFullName;
+		public readonly string executableName;
+		public readonly string args;
+		public readonly string originalCmd;
 		public readonly string url;
+		private bool abort = false;
 		/// <summary>
-		/// The omxplayer process which we start(ed) directly.  This process (mostly?) just starts omxplayer.bin which does the real work.  See [binProc].
+		/// The process which we start(ed) directly.  This process (mostly?) just starts omxplayer.bin which does the real work.  See [binProc].
 		/// </summary>
 		private Process proc;
 		/// <summary>
-		/// The omxplayer.bin process which our omxplayer process starts.  This process actually does the work of video decoding.
+		/// The process which our process starts.  This process actually does the work of video decoding.
 		/// </summary>
 		private Process binProc;
 		private PerformanceCounter cpuReader;
 		private DateTime lastCpuUsageCalcTime = DateTime.UtcNow;
-		//private double lastCpuTotalSeconds = 0;
+		private double lastCpuTotalSeconds = 0;
 		private double cpuUsage = 0;
 		/// <summary>
 		/// The CPU usage of the omxplayer.bin process being managed by this instance.
@@ -52,9 +56,22 @@ namespace OmxPlayerAuto
 		public OmxManager(int id, string cmd)
 		{
 			this.id = id;
-			this.cmd = cmd;
-			this.url = cmd.Split(' ').LastOrDefault();
+			string[] parts = StringUtil.ParseCommandLine(cmd);
+			if (parts.Length > 0)
+			{
+				this.executableFullName = UnQuote(parts[0]);
+				this.executableName = Path.GetFileName(this.executableFullName);
+				this.args = string.Join(" ", parts.Skip(1));
+				this.url = UnQuote(parts[parts.Length - 1]);
+			}
+			this.originalCmd = cmd;
 			StartThread();
+		}
+
+		private string UnQuote(string str)
+		{
+			bool isQuoted = str.StartsWith("\"") && str.EndsWith("\"");
+			return isQuoted ? str.Substring(1, str.Length - 2) : str;
 		}
 
 		private void StartThread()
@@ -70,25 +87,25 @@ namespace OmxPlayerAuto
 			try
 			{
 				int lastMinute = -1;
-				while (true)
+				while (!abort)
 				{
 					try
 					{
 						RestartProcess();
 
-						const double LowCpuLimit = 0.1; // CPU usage below this threshold indicates the process is idle.
+						const double LowCpuLimit = 0.01; // CPU usage below this threshold indicates the process is idle.
 						const int MaxLowCpuCount = 15; // CPU usage can be below the threshold this many times in a row without consequence.
 						int lowCpuCounter = 0;
-						while (true)
+						while (!abort)
 						{
 							if (proc.HasExited)
 							{
-								Logger.Info("omxplayer exit detected (" + thrManager.Name + ")");
+								Logger.Info(proc.ProcessName + " exit detected (" + thrManager.Name + ")");
 								break;
 							}
 							if (binProc.HasExited)
 							{
-								Logger.Info("omxplayer.bin exit detected (" + thrManager.Name + ")");
+								Logger.Info(binProc.ProcessName + " exit detected (" + thrManager.Name + ")");
 								break;
 							}
 							CalcCpuUsage();
@@ -100,7 +117,7 @@ namespace OmxPlayerAuto
 							{
 								if (WebServer.settings.ServerSettings.CpuWatchdog)
 								{
-									Logger.Info("omxplayer.bin hang detected (" + thrManager.Name + ")");
+									Logger.Info(binProc.ProcessName + " hang detected (" + thrManager.Name + ")");
 									break;
 								}
 							}
@@ -149,20 +166,25 @@ namespace OmxPlayerAuto
 
 		private void StopProcess()
 		{
-			if (binProc != null)
-			{
-				try
-				{
-					if (!binProc.HasExited)
-						binProc.Kill();
-				}
-				catch (ThreadAbortException) { throw; }
-				catch (Exception ex)
-				{
-					Logger.Debug(ex, "binProc");
-				}
-				binProc.Dispose();
+			if (binProc == proc)
 				binProc = null;
+			else
+			{
+				if (binProc != null)
+				{
+					try
+					{
+						if (!binProc.HasExited)
+							binProc.Kill();
+					}
+					catch (ThreadAbortException) { throw; }
+					catch (Exception ex)
+					{
+						Logger.Debug(ex, "binProc");
+					}
+					binProc.Dispose();
+					binProc = null;
+				}
 			}
 			if (proc != null)
 			{
@@ -188,31 +210,32 @@ namespace OmxPlayerAuto
 
 		private void StartProcess()
 		{
-			int idxFirstSpace = cmd.IndexOf(' ');
-			string args = null;
-			if (idxFirstSpace > -1)
-			{
-				args = cmd.Substring(idxFirstSpace + 1);
-				string exe = cmd.Substring(0, idxFirstSpace);
-				proc = Process.Start(exe, args);
-			}
-			else
-				proc = Process.Start(cmd);
+			proc = Process.Start(executableFullName, args);
 		}
 
 		private void WaitForBinProc()
 		{
-			int pid = proc.Id;
-			int tries = 0;
-			while (tries++ < 5 && !mappings_binProc.TryGetValue(pid, out binProc))
+			if (Platform.IsUnix())
 			{
-				if (tries > 1)
-					Thread.Sleep(1000);
-				ScanOmxPlayerBinProcesses();
+				if (executableName.IEquals("omxplayer"))
+				{
+					int pid = proc.Id;
+					int tries = 0;
+					while (tries++ < 5 && !mappings_binProc.TryGetValue(pid, out binProc))
+					{
+						if (tries > 1)
+							Thread.Sleep(1000);
+						ScanBinProcesses();
+					}
+					if (binProc == null)
+						throw new Exception("Could not find omxplayer.bin started by " + executableName + "[pid=" + pid + "]");
+				}
+				else
+					binProc = proc;
+				cpuReader = new PerformanceCounter("Process", "% Processor Time", GetProcessInstanceName(binProc.Id));
 			}
-			if (binProc == null)
-				throw new Exception("Could not find omxplayer.bin started by omxplayer[pid=" + pid + "]");
-			cpuReader = new PerformanceCounter("Process", "% Processor Time", binProc.Id.ToString());
+			else
+				binProc = proc;
 		}
 
 		private void CalcCpuUsage()
@@ -221,24 +244,28 @@ namespace OmxPlayerAuto
 			TimeSpan passed = now - lastCpuUsageCalcTime;
 			if (passed.TotalSeconds > 0.9)
 			{
-				cpuUsage = cpuReader.NextValue();
-				lastCpuUsageCalcTime = now;
-
-				// binProc.TotalProcessorTime always returns zero even after calling Refresh().  Yay bugs!  So we're using PerformanceCounter instead as seen above.
-				//binProc.Refresh();
-				//double cpuTotalSeconds = binProc.TotalProcessorTime.TotalSeconds;
-				//Console.WriteLine(cpuTotalSeconds + " : " + proc.Id + " : " + binProc.Id + " : " + thrManager.Name);
-				//double cpuChange = cpuTotalSeconds - lastCpuTotalSeconds;
-				//double secondsPassed = (now - lastCpuUsageCalcTime).TotalSeconds;
-				//cpuUsage = cpuChange / secondsPassed;
-				//lastCpuTotalSeconds = cpuTotalSeconds;
-				//lastCpuUsageCalcTime = now;
+				if (cpuReader != null)
+				{
+					cpuUsage = cpuReader.NextValue();
+					lastCpuUsageCalcTime = now;
+				}
+				else
+				{
+					binProc.Refresh();
+					double cpuTotalSeconds = binProc.TotalProcessorTime.TotalSeconds;
+					double cpuChange = cpuTotalSeconds - lastCpuTotalSeconds;
+					double secondsPassed = (now - lastCpuUsageCalcTime).TotalSeconds;
+					cpuUsage = (cpuChange / secondsPassed) * 100;
+					lastCpuTotalSeconds = cpuTotalSeconds;
+					lastCpuUsageCalcTime = now;
+					//Console.WriteLine("In last " + secondsPassed.ToString("0.000") + ", CPU was used for " + cpuChange.ToString("0.000") + ". CPU usage relative to 1 core: " + cpuUsage.ToString("0.000") + "%");
+				}
 			}
 		}
 		#region (Static/Shared Items) Bin Process Scanning
 		private static ConcurrentDictionary<int, Process> mappings_binProc = new ConcurrentDictionary<int, Process>();
 		private static DateTime lastBinProcScan = DateTime.MinValue;
-		private static void ScanOmxPlayerBinProcesses()
+		private static void ScanBinProcesses()
 		{
 			if ((DateTime.UtcNow - lastBinProcScan).TotalSeconds < 0.9)
 				return;
@@ -282,6 +309,23 @@ namespace OmxPlayerAuto
 			}
 			return null;
 		}
+		private static string GetProcessInstanceName(int pid)
+		{
+			if (Platform.IsUnix())
+				return pid.ToString();
+
+			PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
+			foreach (string instance in cat.GetInstanceNames())
+			{
+				using (PerformanceCounter cnt = new PerformanceCounter("Process", "ID Process", instance, true))
+				{
+					int val = (int)cnt.RawValue;
+					if (val == pid)
+						return instance;
+				}
+			}
+			throw new Exception("Could not find performance counter instance name for pid " + pid + ".");
+		}
 		#endregion
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls
@@ -290,10 +334,10 @@ namespace OmxPlayerAuto
 		{
 			if (!disposedValue)
 			{
+				abort = true;
 				if (disposing)
 				{
 					// dispose managed state (managed objects).
-					thrManager?.Abort();
 					thrManager = null;
 				}
 

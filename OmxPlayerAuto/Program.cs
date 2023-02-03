@@ -11,13 +11,14 @@ namespace OmxPlayerAuto
 	{
 		static void Main(string[] args)
 		{
-			if (Environment.OSVersion.Platform != PlatformID.Unix)
-			{
-				Console.WriteLine("OS \"" + Environment.OSVersion + "\" is not supported.  This program must be run on a Raspberry Pi.");
-				Console.WriteLine("Press any key to exit");
-				Console.ReadKey();
-				return;
-			}
+			//if (Environment.OSVersion.Platform != PlatformID.Unix)
+			//{
+			//	//Console.WriteLine("OS \"" + Environment.OSVersion + "\" is not supported.  This program must be run on a Raspberry Pi.");
+			//	//Console.WriteLine("Press any key to exit");
+			//	//Console.ReadKey();
+			//	AppInit.WindowsService<OmxPlayerAuto>();
+			//	return;
+			//}
 			Logger.logType = LoggingMode.Console | LoggingMode.File;
 			Globals.Initialize(System.Reflection.Assembly.GetExecutingAssembly().Location);
 

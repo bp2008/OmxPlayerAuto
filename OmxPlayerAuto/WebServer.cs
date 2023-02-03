@@ -17,15 +17,22 @@ namespace OmxPlayerAuto
 	public class WebServer : HttpServer
 	{
 #if DEBUG
-		public const bool isDebug = true;
+		public bool isDebug
+		{
+			get
+			{
+				return Debugger.IsAttached;
+			}
+		}
 #else
 		public const bool isDebug = false;
 #endif
+		bool hasKilledOrphanedProcesses = false;
 		Thread omxWatcher;
 		public static Settings settings;
 		DateTime updateCommandsTime = DateTime.UtcNow;
 		string settingsPath = "";
-		List<OmxManager> allOmx = new List<OmxManager>();
+		List<OmxManager> allProcessManagers = new List<OmxManager>();
 		public WebServer(Settings settings, string settingsPath) : base(settings.WebPort, -1, null)
 		{
 			WebServer.settings = settings;
@@ -53,28 +60,26 @@ namespace OmxPlayerAuto
 
 			omxWatcher = new Thread(omxWatcherLoop);
 			omxWatcher.Name = "OMXPlayer Watcher Thread";
-			if (!isDebug)
-				omxWatcher.Start();
+			//if (!isDebug)
+			omxWatcher.Start();
 		}
-
+		private string pathMod
+		{
+			get
+			{
+				return isDebug ? "../../" : "";
+			}
+		}
 		public override void handleGETRequest(HttpProcessor p)
 		{
 			if (p.requestedPage == "")
 			{
-				p.writeSuccess();
-				p.outputStream.Write(File.ReadAllText(isDebug ? "../../default.html" : (Globals.ApplicationDirectoryBase + "default.html"), Encoding.UTF8));
+				WriteFile(p, "text/html; charset=utf-8", "default.html");
+				return;
 			}
 			else if (p.requestedPage == "jquery-3.1.1.min.js")
 			{
-				FileInfo fi = new FileInfo(isDebug ? "../../jquery-3.1.1.min.js" : (Globals.ApplicationDirectoryBase + "jquery-3.1.1.min.js"));
-				if (fi.Exists)
-				{
-					p.writeSuccess("text/javascript; charset=UTF-8", contentLength: fi.Length);
-					p.outputStream.Flush();
-					using (Stream fiStr = fi.OpenRead())
-						fiStr.CopyTo(p.rawOutputStream);
-					p.rawOutputStream.Flush();
-				}
+				WriteFile(p, "text/javascript; charset=utf-8", p.requestedPage);
 				return;
 			}
 			else if (p.requestedPage == "getAll")
@@ -91,6 +96,20 @@ namespace OmxPlayerAuto
 				p.outputStream.Write(GetOmxStatus());
 			}
 		}
+		private void WriteFile(HttpProcessor p, string contentType, string name)
+		{
+			FileInfo fi = new FileInfo(Globals.ApplicationDirectoryBase + pathMod + name);
+			if (fi.Exists)
+			{
+				p.writeSuccess(contentType, contentLength: fi.Length);
+				p.outputStream.Flush();
+				using (Stream fiStr = fi.OpenRead())
+					fiStr.CopyTo(p.tcpStream);
+				p.tcpStream.Flush();
+			}
+			else
+				p.writeFailure();
+		}
 		public class AllServerData
 		{
 			public string OmxPlayerCommands;
@@ -100,14 +119,14 @@ namespace OmxPlayerAuto
 		private string GetOmxStatus()
 		{
 			StringBuilder sb = new StringBuilder();
-			lock (allOmx)
+			lock (allProcessManagers)
 			{
-				foreach (OmxManager manager in allOmx)
+				foreach (OmxManager manager in allProcessManagers)
 				{
 					double cpuUsage = manager.CpuUsage;
 					string cpuStr = cpuUsage.ToString("0.0").PadLeft(5, ' ') + "%";
 					sb.Append("CPU ").Append(cpuStr);
-					sb.Append(" [").Append(manager.id.ToString().PadRight((allOmx.Count / 10) + 1, ' ')).Append("] ");
+					sb.Append(" [").Append(manager.id.ToString().PadRight((allProcessManagers.Count / 10) + 1, ' ')).Append("] ");
 					sb.Append(OmxProcessInfo.GetURL(manager.url)).Append("\n");
 				}
 			}
@@ -136,17 +155,16 @@ namespace OmxPlayerAuto
 		}
 		public void omxWatcherLoop()
 		{
-			if (Environment.OSVersion.Platform != PlatformID.Unix)
-				return;
 			try
 			{
 				while (true)
 				{
 					try
 					{
-						KillAllOmxPlayers();
+						KillOrphanedProcesses();
 						if (settings.ServerSettings.StreamingEnabled)
 						{
+							hasKilledOrphanedProcesses = false;
 							DateTime lastTime = DateTime.UtcNow;
 							List<string> cmds = settings.OmxPlayerCommands;
 							cmds = cmds.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
@@ -157,10 +175,10 @@ namespace OmxPlayerAuto
 
 							Logger.Info(cmds.Count + " items will be started:" + sb.ToString());
 
-							lock (allOmx)
+							lock (allProcessManagers)
 							{
 								foreach (string cmd in cmds)
-									allOmx.Add(new OmxManager(allOmx.Count, cmd));
+									allProcessManagers.Add(new OmxManager(allProcessManagers.Count, cmd));
 							}
 
 							while (settings.ServerSettings.StreamingEnabled && lastTime >= updateCommandsTime)
@@ -184,17 +202,19 @@ namespace OmxPlayerAuto
 			}
 			finally
 			{
-				KillAllOmxPlayers();
+				KillOrphanedProcesses();
 			}
 		}
 
-		private void KillAllOmxPlayers()
+		private void KillOrphanedProcesses()
 		{
-			if (allOmx.Count == 0)
+			if (hasKilledOrphanedProcesses)
 				return;
-			lock (allOmx)
+			hasKilledOrphanedProcesses = true;
+
+			lock (allProcessManagers)
 			{
-				foreach (OmxManager manager in allOmx)
+				foreach (OmxManager manager in allProcessManagers)
 				{
 					try
 					{
@@ -206,18 +226,38 @@ namespace OmxPlayerAuto
 						Logger.Debug(ex);
 					}
 				}
-				allOmx.Clear();
+				allProcessManagers.Clear();
 			}
 
-			// Kill all omxplayer.bin processes, because the Manager instances don't necessarily know about their bin processes yet when they are disposed.
+			List<string> cmds = settings.OmxPlayerCommands;
+			HashSet<string> processNames = new HashSet<string>(cmds
+				.Select(cmd => OmxProcessInfo.GetProcessName(cmd))
+				.Where(n => !string.IsNullOrWhiteSpace(n)));
+
+			Console.WriteLine("Killing processes named " + string.Join(", ", processNames.OrderBy(n => n)));
+
+			// Kill orphan processes
+			if (processNames.Any(n => n.IEquals("omxplayer")))
+				KillAll("omxplayer.bin");
+
+			foreach (string processName in processNames)
+			{
+				string n = processName;
+				if (!Platform.IsUnix())
+					n = Path.GetFileNameWithoutExtension(n);
+				KillAll(n);
+			}
+		}
+		private void KillAll(string processName)
+		{
 			try
 			{
-				Process[] procs = Process.GetProcessesByName("omxplayer.bin");
+				Process[] procs = Process.GetProcessesByName(processName);
 				if (procs == null)
 					return;
 				if (procs.Length > 0)
 				{
-					Console.WriteLine("Killing " + procs.Length + " omxplayer.bin processes");
+					Console.WriteLine("Killing " + procs.Length + " " + processName + " processes");
 					foreach (Process p in procs)
 						p.Kill();
 				}
@@ -271,7 +311,23 @@ namespace OmxPlayerAuto
 		}
 		public static string GetURL(string cmd)
 		{
-			return cmd.Split(' ').LastOrDefault();
+			string[] parts = StringUtil.ParseCommandLine(cmd);
+			if (parts.Length == 1)
+				return cmd;
+			else
+				return UnQuote(parts[parts.Length - 1]);
+		}
+
+		private static string UnQuote(string str)
+		{
+			bool isQuoted = str.StartsWith("\"") && str.EndsWith("\"");
+			return isQuoted ? str.Substring(1, str.Length - 2) : str;
+		}
+		public static string GetProcessName(string cmd)
+		{
+			string[] parts = StringUtil.ParseCommandLine(cmd);
+			string executableFullName = UnQuote(parts[0]);
+			return Path.GetFileName(executableFullName);
 		}
 	}
 }
