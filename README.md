@@ -61,3 +61,12 @@ The first command uses a cropping function. It is not well documented but the ar
 "C:\mpv\mpv.exe" --ontop --no-border --no-input-cursor --no-input-default-bindings --no-keepaspect --geometry=960x540+960+0 --vf=crop=960:536:400:0 "rtsp://user:pass@192.168.0.100/cam/realmonitor?channel=1&subtype=1"
 "C:\mpv\mpv.exe" --ontop --no-border --no-input-cursor --no-input-default-bindings --no-keepaspect --geometry=960x540+960+540 "rtsp://user:pass@192.168.0.101/cam/realmonitor?channel=1&subtype=2"
 ```
+
+### vlc
+
+VLC (VideoLAN) is not as easy to configure for custom video window layouts.  Many of the command line options from the vlc documentation do not work, and the situation is much worse on Linux than it is on Windows. This is as far as I got, and I still had video scaling issues which led me to switch to using **mpv** on Windows.
+
+```
+"C:\Program Files\VideoLAN\VLC\vlc.exe" --rtsp-tcp --video-on-top --no-video-deco --no-embedded-video --qt-start-minimized --no-keyboard-events --no-mouse-events --video-filter="croppadd{cropleft=400,cropright=560}" --video-x=960 --video-y=1 --width=960 --height=536 "rtsp://user:pass@192.168.0.100/cam/realmonitor?channel=1&subtype=1"
+"C:\Program Files\VideoLAN\VLC\vlc.exe" --rtsp-tcp --video-on-top --no-video-deco --no-embedded-video --qt-start-minimized --no-keyboard-events --no-mouse-events --video-x=960 --video-y=540 --width=960 --height=540 "rtsp://user:pass@192.168.0.101/cam/realmonitor?channel=1&subtype=2"
+```
