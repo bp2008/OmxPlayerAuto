@@ -64,7 +64,9 @@ The first command uses a cropping function. It is not well documented but the ar
 
 ### vlc
 
-VLC (VideoLAN) is not as easy to configure for custom video window layouts.  Many of the command line options from the vlc documentation do not work, and the situation is much worse on Linux than it is on Windows. This is as far as I got, and I still had video scaling issues which led me to switch to using **mpv** on Windows.
+VLC (VideoLAN) is not as easy to configure for custom video window layouts.  Many of the command line options from the vlc documentation do not work or are buggy, and the situation is much worse on Linux than it is on Windows. This is as far as I got, and I still had video scaling issues which led me to switch to using **mpv** on Windows.
+
+Note how I used --video-y=1 in one of these commands to offset the video by 1 pixel from the top of the screen.  This is because passing 0 here causes VLC to ignore the argument entirely.
 
 ```
 "C:\Program Files\VideoLAN\VLC\vlc.exe" --rtsp-tcp --video-on-top --no-video-deco --no-embedded-video --qt-start-minimized --no-keyboard-events --no-mouse-events --video-filter="croppadd{cropleft=400,cropright=560}" --video-x=960 --video-y=1 --width=960 --height=536 "rtsp://user:pass@192.168.0.100/cam/realmonitor?channel=1&subtype=1"
